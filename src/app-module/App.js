@@ -18,8 +18,8 @@ export const App = (function () {
         DOMController.renderProjects(allProjects);
         DOMController.updateProjectDropdown(TaskManager.getProjects());
 
-        const addTaskForm = document.querySelector(".task-form-dialog");
-        const addProjectForm = document.querySelector(".project-form-dialog");
+        const addTaskForm = document.querySelector(".add-task-form-dialog");
+        const addProjectForm = document.querySelector(".add-project-form-dialog");
 
         document.querySelector('.add-project-form').addEventListener('submit', (event) => {
             event.preventDefault();
@@ -44,60 +44,45 @@ export const App = (function () {
             
             const projects = TaskManager.getProjects();
 
-            const title = document.querySelector('.task-title-input').value;
-            const description = document.querySelector('.description-input').value;
-            const dueDate = document.querySelector('.due-date').value;
-            const priority = document.querySelector('.priority').value;
-            const selectedProjectTitle = document.querySelector('.project-select').value;
-            const project = TaskManager.findProject(selectedProjectTitle);
-
-            const task = Task(title, description, dueDate, priority, project);
-
+            const title = document.querySelector('.add-task-form .task-title-input').value;
+            const description = document.querySelector('.add-task-form .description-input').value;
+            const dueDate = document.querySelector('.add-task-form .due-date').value;
+            const priority = document.querySelector('.add-task-form .priority').value;
+            const selectedProjectTitle = document.querySelector('.add-task-form .project-select').value;
             const selectedProject = TaskManager.findProject(selectedProjectTitle);
 
-            if (selectedProject) {
-                TaskManager.addTask(task, selectedProject);
-                DOMController.renderAllTasks(projects);
-                addTaskForm.close();
+            // const existingTask = projects.some(project => {
+            //     return project.getTasks().some(task => task.getTitle() === title);
+            // });
+
+            // if (existingTask) {
+            //     alert('A project with this title already exists. Please choose a different title.');
+            //     return;
+            // }
+
+            const task = Task(title, description, dueDate, priority, selectedProject);
+            TaskManager.addTask(task, selectedProject);
+
+            const projectTab = document.querySelector(`.tab[data-title='${selectedProjectTitle}']`);
+
+            if (projectTab && projectTab.classList.contains('active')) {
+                const tasks = selectedProject.getTasks();
+                DOMController.renderTasks(tasks);
             } else {
-                console.log('ERROR: project not found');
+                const task = Task(title, description, dueDate, priority, selectedProject);
+                DOMController.renderAllTasks(selectedProject);
+                const allTasksTab = document.querySelector('.all-tasks-tab');
+                DOMController.makeTabActive(allTasksTab);
             }
+
+
+            addTaskForm.close();
         });
-
-        document.querySelector('.projects-list').addEventListener('click', (event) => {
-            const clickedElement = event.target.closest('.projects-list-tab'); // Find the closest project div
-
-            if (!clickedElement) {return}
-
-            const projectTitle = clickedElement.getAttribute('data-title');
-            const project = TaskManager.findProject(projectTitle);
-            DOMController.renderTasks(project.getTasks());
-        });
-        
-        document.querySelector(".add-task-btn").addEventListener("click", () => {
-            addTaskForm.showModal();
-        });
-
-        document.querySelector(".add-project-btn").addEventListener("click", () => {
-            addProjectForm.showModal();
-        });
-
-        document.querySelector('.all-tasks-tab').addEventListener('click', () => {
-            DOMController.renderAllTasks();
-        });
-
-        // document.querySelector('.home-list').addEventListener('click', event => {
-        //     const currentBtn = event.target.closest('.home-list-tab');
-        //     console.log(currentBtn)
-
-        //     DOMController.deactivateButtons('home-list-tab');
-        //     currentBtn.classList.add('active');
-        // });
 
         document.querySelectorAll('.side-menu .tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                DOMController.deactivateButtons('side-menu .tab');
-                tab.classList.add('active');
+            tab.addEventListener('click', (event) => {
+                const tab = event.currentTarget.closest('.tab');
+                DOMController.makeTabActive(tab);
             })
         });
     }

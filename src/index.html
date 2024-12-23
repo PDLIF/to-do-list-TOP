@@ -9,7 +9,7 @@
 </head>
 <body>
     <main class="main">
-        <dialog id="addTaskForm" class="task-form-dialog hidden">
+        <dialog id="addTaskForm" class="add-task-form-dialog hidden">
             <form method="dialog" class="form add-task-form">
                 <h3 class="form-heading">Create new Task</h3>
                 <div class="formField">
@@ -22,7 +22,7 @@
                 </div>
                 <div class="formField">
                     <label for="due-date">Due Date:</label>
-                    <input type="due-date" id="due-date" name="due-date" class="due-date" required>
+                    <input type="date" id="due-date" name="due-date" class="due-date" required>
                 </div>
                 <div class="formField">
                     <label for="priority">Priority:</label>
@@ -42,7 +42,40 @@
                 <button type="submit" class="add-task-form-btn">Add Task</button>
             </form>
         </dialog>
-        <dialog class="project-form-dialog hidden">
+        <dialog id="editTaskForm" class="edit-task-form-dialog hidden">
+            <form method="dialog" class="form edit-task-form">
+                <h3 class="form-heading">Create new Task</h3>
+                <div class="formField">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" class="task-title-input" required>
+                </div>
+                <div class="formField">
+                    <label for="description">Discription:</label>
+                    <input type="text" id="description" name="description" class="description-input" required>
+                </div>
+                <div class="formField">
+                    <label for="due-date">Due Date:</label>
+                    <input type="date" id="due-date" name="due-date" class="due-date" required>
+                </div>
+                <div class="formField">
+                    <label for="priority">Priority:</label>
+                    <select id="priority" name="options" class="priority">
+                        <option value="" disabled selected hidden>Select a priority</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                      </select>
+                </div>
+                <div class="formField">
+                    <label for="project">Project:</label>
+                    <select id="project" name="project" class="project-select">
+                    </select>
+                </div>
+                <button type="submit" class="save-task-form-btn">Save</button>
+            </form>
+        </dialog>
+        <dialog class="add-project-form-dialog hidden">
             <form class="add-project-form">
                 <h3 class="form-heading">Create new Project</h3>
                 <div class="formField">
