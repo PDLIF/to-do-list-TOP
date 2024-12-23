@@ -1,4 +1,5 @@
 export const Task = function(title, description, dueDate, priority, project) {
+    
     function getTitle() {
         return title;
     }

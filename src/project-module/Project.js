@@ -13,5 +13,9 @@ export const Project = function (title) {
         title = newTitle();
     }
 
-    return { getTitle, getTasks, setTitle }
+    function findTask(title) {
+        return tasks.find(task => task.getTitle() === title);
+    }
+
+    return { getTitle, getTasks, setTitle, findTask }
 }

@@ -8,10 +8,9 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="to-do-app">
-        <h1 class="heading">To-Do App</h2>
-        <div class="forms">
-            <form action="" class="form task-form">
+    <main class="main">
+        <dialog id="addTaskForm" class="task-form-dialog hidden">
+            <form method="dialog" class="form add-task-form">
                 <h3 class="form-heading">Create new Task</h3>
                 <div class="formField">
                     <label for="title">Title:</label>
@@ -40,23 +39,39 @@
                     <select id="project" name="project" class="project-select">
                     </select>
                 </div>
-                <button class="add-task-btn">Add Task</button>
+                <button type="submit" class="add-task-form-btn">Add Task</button>
             </form>
-
-            <form action="" class="form project-form">
+        </dialog>
+        <dialog class="project-form-dialog hidden">
+            <form class="add-project-form">
                 <h3 class="form-heading">Create new Project</h3>
                 <div class="formField">
                     <label for="title">Title:</label>
                     <input type="text" id="title" name="title" class="project-title-input" required>
                 </div>
-                <button class="add-project-btn">Add Project</button>
+                <button type="submit" class="add-project-form-btn">Add Project</button>
             </form>
-        </div>
+        </dialog>
 
+        <div class="side-menu">
+            <section class="home-section">
+                <div class="btn add-task-btn"><a>+ Add Task</a></div>
+                <ul class="home-list">
+                    <li class="tab home-list-tab all-tasks-tab"><a>All Tasks</a></li>
+                    <li class="tab home-list-tab today-tasks-tab"><a>Today</a></li>
+                    <li class="tab home-list-tab this-week-tab"><a>This Week</a></li>
+                    <li class="tab home-list-tab important-tab"><a>Important</a></li>
+                </ul>
+            </section>
+            <section class="projects-section">
+                <h5 class="projects-heading">Projects</h5>
+                <ul class="projects-list"></ul>
+                <div class="btn add-project-btn"><a>+ Add Project</a></div>
+            </section>
+        </div>
         <div class="content">
-            <div class="projects-list"></div>
             <div class="tasks-list"></div>
         </div>
-    </div>
+    </main>
 </body>
 </html>
