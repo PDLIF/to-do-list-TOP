@@ -1,5 +1,6 @@
 import { TaskManager } from "../task-manager-module/TaskManager";
-import { Project } from '../project-module/Project'
+import { Project } from '../project-module/Project';
+import { Task } from '../task-module/Task';
 
 export const DOMController = (function () {
     const projectsList = document.querySelector('.projects-list');
@@ -166,6 +167,50 @@ export const DOMController = (function () {
         
         DOMController.renderProjects(TaskManager.getProjects());
         DOMController.updateProjectDropdown(TaskManager.getProjects());
+    });
+
+
+
+
+
+    document.querySelector('.add-task-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        
+        const projects = TaskManager.getProjects();
+
+        const title = document.querySelector('.add-task-form .task-title-input').value;
+        const description = document.querySelector('.add-task-form .description-input').value;
+        const dueDate = document.querySelector('.add-task-form .due-date').value;
+        const priority = document.querySelector('.add-task-form .priority').value;
+        const selectedProjectTitle = document.querySelector('.add-task-form .project-select').value;
+        const selectedProject = TaskManager.findProject(selectedProjectTitle);
+
+        const existingTask = projects.some(project => {
+            return project.getTasks().some(task => task.getTitle() === title);
+        });
+
+        if (existingTask) {
+            alert('A project with this title already exists. Please choose a different title.');
+            return;
+        }
+
+        const task = Task(title, description, dueDate, priority, selectedProject);
+        TaskManager.addTask(task, selectedProject);
+
+        const projectTab = document.querySelector(`.tab[data-title='${selectedProjectTitle}']`);
+
+        if (projectTab && projectTab.classList.contains('active')) {
+            const tasks = selectedProject.getTasks();
+            DOMController.renderTasks(tasks);
+        } else {
+            const task = Task(title, description, dueDate, priority, selectedProject);
+            DOMController.renderAllTasks(selectedProject);
+            const allTasksTab = document.querySelector('.all-tasks-tab');
+            DOMController.makeTabActive(allTasksTab);
+        }
+
+
+        addTaskForm.close();
     });
 
 
