@@ -36,5 +36,9 @@ export const Task = function(title, description, dueDate, priority, project) {
         return project;
     }
 
-    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject }
+    function setProject(newProject) {
+        project = newProject;
+    }
+
+    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject, setProject }
 }

@@ -1,4 +1,5 @@
 import { TaskManager } from "../task-manager-module/TaskManager";
+import { Project } from '../project-module/Project'
 
 export const DOMController = (function () {
     const projectsList = document.querySelector('.projects-list');
@@ -6,6 +7,7 @@ export const DOMController = (function () {
 
     const addTaskForm = document.querySelector(".add-task-form-dialog");
     const addProjectForm = document.querySelector(".add-project-form-dialog");
+    const editTaskForm = document.querySelector(".edit-task-form-dialog");
 
     function updateProjectsList(project) {
         const projectBtn = document.createElement('li');
@@ -93,26 +95,19 @@ export const DOMController = (function () {
 
         tasksList.appendChild(taskDiv);
 
-
-
-
-
-
-
         optionsBtn.addEventListener('click', () => {                            // make dropdown menu visible
             dropdownMenu.classList.toggle('show');
         });
-
-
-
-
-        const editProjectForm = document.querySelector(".edit-task-form-dialog");
         
         editOption.addEventListener('click', (event) => {
-            editProjectForm.showModal();
+            editTaskForm.showModal();
 
-            const taskTitle = event.currentTarget.closest('.task-title');
-            const projectTitle = event.currentTarget.closest('.project-div');
+            const taskDiv = event.currentTarget.closest('.task-div');
+
+            const taskTitle = taskDiv.dataset.title;
+            const parentProjectTitle = taskDiv.dataset.project;
+
+            const task = TaskManager.findTask(taskTitle);
 
             const titleField = document.querySelector('.edit-task-form .task-title-input');
             const descriptionField = document.querySelector('.edit-task-form .description-input');
@@ -126,12 +121,8 @@ export const DOMController = (function () {
             priorityField.value = priority.textContent;
             parentProjectField.value = parentProjectTitle;
 
-            console.log(title.textContent);
-        })
-        
-        
-        
-        
+            editTaskForm.currentTask = task;
+        });
 
         deleteOption.addEventListener('click', (event) => {                     // remove task
             const currentTask = event.currentTarget.closest('.task-div');
@@ -149,16 +140,100 @@ export const DOMController = (function () {
             // Check if elements exist before proceeding
             if (optionsBtn && dropdownMenu) {
                 if (!dropdownMenu.contains(event.target) && !optionsBtn.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
+                    dropdownMenu.classList.remove('show');
                 }
             }
         });
     }
 
+
+
+
+    document.querySelector('.add-project-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        
+        const title = document.querySelector('.project-title-input').value;
+        const existingProject = TaskManager.getProjects().find(project => project.getTitle() === title);
+
+        if (existingProject) {
+            alert('A project with this title already exists. Please choose a different title.');
+            return;
+        }
+        
+        const project = Project(title);
+        TaskManager.addProject(project);
+        addProjectForm.close();
+        
+        DOMController.renderProjects(TaskManager.getProjects());
+        DOMController.updateProjectDropdown(TaskManager.getProjects());
+    });
+
+
+
+
+
+    editTaskForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const task = editTaskForm.currentTask;
+        if (!task) return;
+        
+        const newTitle = document.querySelector('.edit-task-form .task-title-input').value;
+        const newDescription = document.querySelector('.edit-task-form .description-input').value;
+        const newDueDate = document.querySelector('.edit-task-form .due-date').value;
+        const newPriority = document.querySelector('.edit-task-form .priority').value;
+        const newParentProjectTitle = document.querySelector('.edit-task-form .project-select').value;
+        const newParentProject = TaskManager.findProject(newParentProjectTitle);
+
+        const taskDiv = document.querySelector(`.task-div[data-title="${task.getTitle()}"]`);
+        const titleElement = taskDiv.querySelector('.task-title');
+        const descriptionElement = taskDiv.querySelector('.description');
+        const dueDateElement = taskDiv.querySelector('.due-date');
+        const priorityElement = taskDiv.querySelector('.priority');
+        const parentProjectElement = taskDiv.querySelector('.project-title');
+
+        const oldProject = task.getProject();
+        oldProject.deleteTask(task);
+        
+        task.setTitle(newTitle);
+        task.setDescription(newDescription);
+        task.setDueDate(newDueDate);
+        task.setPriority(newPriority);
+        task.setProject(newParentProject);
+
+        newParentProject.addTask(task);
+
+        titleElement.textContent = newTitle;
+        descriptionElement.textContent = newDescription;
+        dueDateElement.textContent = newDueDate;
+        priorityElement.textContent = newPriority;
+        parentProjectElement.textContent = `Project: ${newParentProjectTitle}`;
+        
+        // title.textContent = newTitle;
+        // parentProject.textContent = `Project: ${newSelectedProjectTitle}`;
+        // description.textContent = newDescription;
+        // dueDate.textContent = newDueDate;
+        // priority.textContent = newPriority;
+
+        taskDiv.setAttribute('data-title', newTitle);
+        taskDiv.setAttribute('data-project', newParentProjectTitle);
+
+        editTaskForm.close();
+    });
+
+
+
+
+
+
     function renderProjects(projects) {
         projectsList.innerHTML = ''; 
         projects.forEach(updateProjectsList);
     }
+
+
+
+
 
     function renderAllTasks() {
         tasksList.innerHTML = ''; 
@@ -168,14 +243,26 @@ export const DOMController = (function () {
             tasks.forEach(updateTasksList);
         });
     }
+
+
+
+
     
     function renderTasks(tasks) {
         tasksList.innerHTML = ''; 
         tasks.forEach(updateTasksList);
     }
 
+
+
+
+
     const addFormProjectSelect = document.querySelector('.add-task-form .project-select');
     const editFormProjectSelect = document.querySelector('.edit-task-form .project-select');
+
+
+
+
     
     function updateProjectDropdown(projects) {
         addFormProjectSelect.innerHTML = ''; // Clear existing options
@@ -195,16 +282,25 @@ export const DOMController = (function () {
         });
     }
 
+
+
+
+
     function deactivateTabs(className) {
         document.querySelectorAll(`${className}`).forEach((btn) => {
             btn.classList.remove('active'); // Remove 'active' from all buttons
         });
     }
 
+
+
+
+
     function makeTabActive(tab) {
         DOMController.deactivateTabs('.side-menu .tab');
         tab.classList.add('active');
     }
+
 
 
 
@@ -220,7 +316,9 @@ export const DOMController = (function () {
     document.querySelector(".add-project-btn").addEventListener("click", () => {
         addProjectForm.showModal();
     });
-    
+
+
+
 
 
     document.querySelector('.projects-list').addEventListener('click', (event) => {
@@ -232,6 +330,10 @@ export const DOMController = (function () {
         const project = TaskManager.findProject(projectTitle);
         DOMController.renderTasks(project.getTasks());
     });
+
+
+
+
 
     return { updateProjectsList, updateTasksList, renderProjects, renderAllTasks, renderTasks, updateProjectDropdown, deactivateTabs, makeTabActive }
 })();

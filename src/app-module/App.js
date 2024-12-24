@@ -21,23 +21,24 @@ export const App = (function () {
         const addTaskForm = document.querySelector(".add-task-form-dialog");
         const addProjectForm = document.querySelector(".add-project-form-dialog");
 
-        document.querySelector('.add-project-form').addEventListener('submit', (event) => {
-            event.preventDefault();
-            const title = document.querySelector('.project-title-input').value;
-            const existingProject = TaskManager.getProjects().find(project => project.getTitle() === title);
+        // document.querySelector('.add-project-form').addEventListener('submit', (event) => {
+        //     event.preventDefault();
 
-            if (existingProject) {
-                alert('A project with this title already exists. Please choose a different title.');
-                return;
-            }
+        //     const title = document.querySelector('.project-title-input').value;
+        //     const existingProject = TaskManager.getProjects().find(project => project.getTitle() === title);
+
+        //     if (existingProject) {
+        //         alert('A project with this title already exists. Please choose a different title.');
+        //         return;
+        //     }
             
-            const project = Project(title);
-            TaskManager.addProject(project);
-            addProjectForm.close();
+        //     const project = Project(title);
+        //     TaskManager.addProject(project);
+        //     addProjectForm.close();
             
-            DOMController.renderProjects(TaskManager.getProjects());
-            DOMController.updateProjectDropdown(TaskManager.getProjects());
-        });
+        //     DOMController.renderProjects(TaskManager.getProjects());
+        //     DOMController.updateProjectDropdown(TaskManager.getProjects());
+        // });
 
         document.querySelector('.add-task-form').addEventListener('submit', (event) => {
             event.preventDefault();
@@ -51,14 +52,14 @@ export const App = (function () {
             const selectedProjectTitle = document.querySelector('.add-task-form .project-select').value;
             const selectedProject = TaskManager.findProject(selectedProjectTitle);
 
-            // const existingTask = projects.some(project => {
-            //     return project.getTasks().some(task => task.getTitle() === title);
-            // });
+            const existingTask = projects.some(project => {
+                return project.getTasks().some(task => task.getTitle() === title);
+            });
 
-            // if (existingTask) {
-            //     alert('A project with this title already exists. Please choose a different title.');
-            //     return;
-            // }
+            if (existingTask) {
+                alert('A project with this title already exists. Please choose a different title.');
+                return;
+            }
 
             const task = Task(title, description, dueDate, priority, selectedProject);
             TaskManager.addTask(task, selectedProject);
@@ -78,6 +79,8 @@ export const App = (function () {
 
             addTaskForm.close();
         });
+        
+        
 
         document.querySelectorAll('.side-menu .tab').forEach(tab => {
             tab.addEventListener('click', (event) => {

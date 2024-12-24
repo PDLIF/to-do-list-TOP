@@ -9,6 +9,10 @@ export const Project = function (title) {
         return tasks;
     }
 
+    function addTask(task) {
+        tasks.push(task);
+    }
+
     function setTitle(newTitle) {
         title = newTitle();
     }
@@ -17,5 +21,10 @@ export const Project = function (title) {
         return tasks.find(task => task.getTitle() === title);
     }
 
-    return { getTitle, getTasks, setTitle, findTask }
+    function deleteTask(task) {
+        const index = tasks.indexOf(task);
+        tasks.splice(index, 1);
+    }
+
+    return { getTitle, getTasks, addTask, setTitle, findTask, deleteTask }
 }
