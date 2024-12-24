@@ -18,12 +18,10 @@ export const App = (function () {
         DOMController.renderProjects(allProjects);
         DOMController.updateProjectDropdown(TaskManager.getProjects());
 
-        document.querySelectorAll('.side-menu .tab').forEach(tab => {
-            tab.addEventListener('click', (event) => {
-                const tab = event.currentTarget.closest('.tab');
-                DOMController.makeTabActive(tab);
-            })
-        });
+        // document.querySelector('.side-menu').addEventListener(event => {
+        //     const clickedTab = event.target.closest('.tab');
+        //     DOMController.makeTabActive(clickedTab);
+        // });
     }
     
     return { initialize }

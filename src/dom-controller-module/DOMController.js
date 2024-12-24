@@ -10,6 +10,7 @@ export const DOMController = (function () {
     const addProjectForm = document.querySelector(".add-project-form-dialog");
     const editTaskForm = document.querySelector(".edit-task-form-dialog");
 
+    // adding a DOM project element to the sidebar
     function updateProjectsList(project) {
         const projectBtn = document.createElement('li');
         projectBtn.classList.add('tab', 'projects-list-tab');
@@ -23,6 +24,7 @@ export const DOMController = (function () {
         projectsList.appendChild(projectBtn);
     }
     
+    // adding a DOM task element
     function updateTasksList(task) {
         const taskDiv = document.createElement('div');
         taskDiv.classList.add('task-div');
@@ -67,10 +69,10 @@ export const DOMController = (function () {
         
         const optionsBtn = document.createElement('div');
         optionsBtn.classList.add('task-options-btn');
-        optionsBtn.textContent = '⋮'; // Vertical ellipsis for dropdown icon
+        optionsBtn.textContent = '⋮';
     
         const dropdownMenu = document.createElement('div');
-        dropdownMenu.classList.add('dropdown-menu'); // Start hidden
+        dropdownMenu.classList.add('dropdown-menu');
 
         const editOption = document.createElement('div');
         editOption.classList.add('dropdown-item');
@@ -96,10 +98,12 @@ export const DOMController = (function () {
 
         tasksList.appendChild(taskDiv);
 
-        optionsBtn.addEventListener('click', () => {                            // make dropdown menu visible
+        // make dropdown menu visible
+        optionsBtn.addEventListener('click', () => {
             dropdownMenu.classList.toggle('show');
         });
         
+        // options btn event listener
         editOption.addEventListener('click', (event) => {
             editTaskForm.showModal();
 
@@ -125,7 +129,8 @@ export const DOMController = (function () {
             editTaskForm.currentTask = task;
         });
 
-        deleteOption.addEventListener('click', (event) => {                     // remove task
+        // remove task
+        deleteOption.addEventListener('click', (event) => {
             const currentTask = event.currentTarget.closest('.task-div');
             const taskTitle = currentTask.dataset.title;
             const taskProject = currentTask.dataset.project;
@@ -137,7 +142,8 @@ export const DOMController = (function () {
             currentTask.remove();
         });
 
-        document.addEventListener('click', (event) => {                         // make dropdown menu disssapear if clicked outside
+        // make dropdown menu disssapear if clicked outside
+        document.addEventListener('click', (event) => {
             // Check if elements exist before proceeding
             if (optionsBtn && dropdownMenu) {
                 if (!dropdownMenu.contains(event.target) && !optionsBtn.contains(event.target)) {
@@ -150,7 +156,8 @@ export const DOMController = (function () {
 
 
 
-    document.querySelector('.add-project-form').addEventListener('submit', (event) => {
+    // add project form submition
+    document.querySelector('.add-project-form').addEventListener('submit', (event) => {       
         event.preventDefault();
         
         const title = document.querySelector('.project-title-input').value;
@@ -172,7 +179,7 @@ export const DOMController = (function () {
 
 
 
-
+    // add task form submition
     document.querySelector('.add-task-form').addEventListener('submit', (event) => {
         event.preventDefault();
         
@@ -216,7 +223,7 @@ export const DOMController = (function () {
 
 
 
-
+    // edit task form submition
     editTaskForm.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -253,12 +260,6 @@ export const DOMController = (function () {
         dueDateElement.textContent = newDueDate;
         priorityElement.textContent = newPriority;
         parentProjectElement.textContent = `Project: ${newParentProjectTitle}`;
-        
-        // title.textContent = newTitle;
-        // parentProject.textContent = `Project: ${newSelectedProjectTitle}`;
-        // description.textContent = newDescription;
-        // dueDate.textContent = newDueDate;
-        // priority.textContent = newPriority;
 
         taskDiv.setAttribute('data-title', newTitle);
         taskDiv.setAttribute('data-project', newParentProjectTitle);
@@ -270,7 +271,7 @@ export const DOMController = (function () {
 
 
 
-
+    // render projects in the sidebar
     function renderProjects(projects) {
         projectsList.innerHTML = ''; 
         projects.forEach(updateProjectsList);
@@ -279,7 +280,7 @@ export const DOMController = (function () {
 
 
 
-
+    // display all tasks
     function renderAllTasks() {
         tasksList.innerHTML = ''; 
         const projects = TaskManager.getProjects();
@@ -292,7 +293,7 @@ export const DOMController = (function () {
 
 
 
-    
+    // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
     function renderTasks(tasks) {
         tasksList.innerHTML = ''; 
         tasks.forEach(updateTasksList);
@@ -301,15 +302,11 @@ export const DOMController = (function () {
 
 
 
-
-    const addFormProjectSelect = document.querySelector('.add-task-form .project-select');
-    const editFormProjectSelect = document.querySelector('.edit-task-form .project-select');
-
-
-
-
-    
+    // render add and edit forms' dropdowns for project selection
     function updateProjectDropdown(projects) {
+        const addFormProjectSelect = document.querySelector('.add-task-form .project-select');
+        const editFormProjectSelect = document.querySelector('.edit-task-form .project-select');
+
         addFormProjectSelect.innerHTML = ''; // Clear existing options
         editFormProjectSelect.innerHTML = ''; // Clear existing options
     
@@ -330,7 +327,7 @@ export const DOMController = (function () {
 
 
 
-
+    // make all tabs in sidebar inactive
     function deactivateTabs(className) {
         document.querySelectorAll(`${className}`).forEach((btn) => {
             btn.classList.remove('active'); // Remove 'active' from all buttons
@@ -340,7 +337,7 @@ export const DOMController = (function () {
 
 
 
-
+    // make a specific tab active
     function makeTabActive(tab) {
         DOMController.deactivateTabs('.side-menu .tab');
         tab.classList.add('active');
@@ -349,7 +346,7 @@ export const DOMController = (function () {
 
 
 
-
+    // adding event listeners to tabs and buttons in the sidebar
     document.querySelector('.all-tasks-tab').addEventListener('click', () => {
         DOMController.renderAllTasks();
     });
@@ -363,6 +360,15 @@ export const DOMController = (function () {
     });
 
 
+    // making a clicked tab active
+    document.querySelectorAll('.home-list, .projects-list').forEach(list => {
+        list.addEventListener('click', event => {
+            const clickedTab = event.target.closest('.tab');
+            if (clickedTab) {
+                DOMController.makeTabActive(clickedTab);
+            }
+        });
+    });
 
 
 
