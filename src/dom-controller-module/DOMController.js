@@ -8,8 +8,80 @@ export const DOMController = (function () {
 
     const addTaskForm = document.querySelector(".add-task-form-dialog");
     const addProjectForm = document.querySelector(".add-project-form-dialog");
-    const editTaskForm = document.querySelector(".edit-task-form-dialog");
+    const editTaskFormModal = document.querySelector(".edit-task-form-dialog");
 
+    const editTaskForm = document.querySelector(".edit-task-form");
+
+
+
+
+    function updateTaskData(task, updates) {
+        if (!task) {
+            console.error(`Task with name ${task.getTitle()} not found.`);
+            return null;
+        }
+    
+        task.setTitle(updates.title);
+        task.setDescription(updates.description);
+        task.setDueDate(updates.dueDate);
+        task.setPriority(updates.priority);
+        task.setProject(updates.project);
+
+        return task;
+    }
+
+
+
+    
+    function updateTaskUI(oldTaskId, newTaskId, updatedTask) {
+        const taskDiv = document.querySelector(`[data-title="${oldTaskId}"]`);
+
+        const task = TaskManager.findTask(newTaskId);
+        const taskTitle = task.getTitle();
+        taskDiv.setAttribute('data-title', taskTitle);
+        
+        if (!taskDiv) {
+            console.error(`Task element with ID ${newTaskId} not found.`);
+            return;
+        }
+    
+        taskDiv.querySelector(".task-title").textContent = updatedTask.getTitle();
+        taskDiv.querySelector(".project-title").textContent = `Project: ${updatedTask.getProject().getTitle()}`;
+        taskDiv.querySelector(".description").textContent = updatedTask.getDescription();
+        taskDiv.querySelector(".due-date").textContent = updatedTask.getDueDate();
+        taskDiv.querySelector(".priority").textContent = updatedTask.getPriority();
+    }
+
+    editTaskForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const currentTask = editTaskFormModal.currentTask;
+        const oldTitle = currentTask.getTitle();
+        const newTaskTitle = editTaskForm.elements.title.value;
+
+        const newParentProjectTitle = editTaskForm.elements.project.value;
+        const newParentProject = TaskManager.findProject(newParentProjectTitle);
+    
+        // Update task data
+        const updatedTask = updateTaskData(currentTask, {
+            title: editTaskForm.elements.title.value,
+            description: editTaskForm.elements.description.value,
+            dueDate: editTaskForm.elements.dueDate.value,
+            priority: editTaskForm.elements.options.value,
+            project: newParentProject
+        });
+    
+        if (updatedTask) {
+            // Update UI
+            updateTaskUI(oldTitle, newTaskTitle, updatedTask);
+        }
+    
+        // Hide modal
+        editTaskFormModal.close();
+    });
+    
+
+    
 
 
     function handleDeleteTask(event) {
@@ -24,13 +96,15 @@ export const DOMController = (function () {
         currentTaskDiv.remove();
     }
 
+
+
+
     function openEditForm(event) {
-        editTaskForm.showModal();
+        editTaskFormModal.showModal();
 
         const currentTaskDiv = event.currentTarget.closest('.task-div');
 
         const taskTitle = currentTaskDiv.dataset.title;
-        const parentProjectTitle = currentTaskDiv.dataset.project;
 
         const task = TaskManager.findTask(taskTitle);
 
@@ -46,10 +120,11 @@ export const DOMController = (function () {
         priorityField.value = task.getPriority();
         parentProjectField.value = task.getProject().getTitle();
 
-        editTaskForm.currentTask = task;
+        editTaskFormModal.currentTask = task;
     }
-    
-    
+
+
+
     
     function createTaskOptions() {
         const optionsWrapper = document.createElement('div');
@@ -86,11 +161,8 @@ export const DOMController = (function () {
         });
 
         document.addEventListener('click', (event) => {
-            // Check if elements exist before proceeding
-            if (optionsBtn && dropdownContainer) {
-                if (!dropdownContainer.contains(event.target) && !optionsBtn.contains(event.target)) {
-                    dropdownContainer.classList.remove('show');
-                }
+            if (!dropdownContainer.contains(event.target) && !optionsBtn.contains(event.target)) {
+                dropdownContainer.classList.remove('show');
             }
         });
 
@@ -108,7 +180,7 @@ export const DOMController = (function () {
     
     
     // adding a DOM project element to the sidebar
-    function updateProjectsList(project) {
+    function addProjectTab(project) {
         const projectBtn = document.createElement('li');
         projectBtn.classList.add('tab', 'projects-list-tab');
         projectBtn.setAttribute('data-title', project.getTitle());
@@ -122,7 +194,7 @@ export const DOMController = (function () {
     }
     
     // adding a DOM task element
-    function updateTasksList(task) {
+    function addTaskDiv(task) {
         const taskDiv = document.createElement('div');
         taskDiv.classList.add('task-div');
         taskDiv.setAttribute('data-title', task.getTitle());
@@ -163,8 +235,6 @@ export const DOMController = (function () {
 
         const dropdownMenu = createTaskOptions();
 
-
-
         taskDiv.appendChild(heading);
         taskDiv.appendChild(description);
         taskDiv.appendChild(dueDateWrapper);
@@ -172,60 +242,6 @@ export const DOMController = (function () {
         taskDiv.appendChild(dropdownMenu);
 
         tasksList.appendChild(taskDiv);
-
-        // make dropdown menu visible
-        // optionsBtn.addEventListener('click', () => {
-        //     dropdownMenu.classList.toggle('show');
-        // });
-        
-        // options btn event listener
-        // editOption.addEventListener('click', (event) => {
-        //     editTaskForm.showModal();
-
-        //     const taskDiv = event.currentTarget.closest('.task-div');
-
-        //     const taskTitle = taskDiv.dataset.title;
-        //     const parentProjectTitle = taskDiv.dataset.project;
-
-        //     const task = TaskManager.findTask(taskTitle);
-
-        //     const titleField = document.querySelector('.edit-task-form .task-title-input');
-        //     const descriptionField = document.querySelector('.edit-task-form .description-input');
-        //     const dueDateField = document.querySelector('.edit-task-form .due-date');
-        //     const priorityField = document.querySelector('.edit-task-form .priority');
-        //     const parentProjectField = document.querySelector('.edit-task-form .project-select');
-
-        //     titleField.value = title.textContent;
-        //     descriptionField.value = description.textContent;
-        //     dueDateField.value = dueDate.textContent;
-        //     priorityField.value = priority.textContent;
-        //     parentProjectField.value = parentProjectTitle;
-
-        //     editTaskForm.currentTask = task;
-        // });
-
-        // remove task
-        // deleteOption.addEventListener('click', (event) => {
-        //     const currentTaskDiv = event.currentTarget.closest('.task-div');
-        //     const taskTitle = currentTaskDiv.dataset.title;
-        //     const taskProject = currentTaskDiv.dataset.project;
-
-        //     const task = TaskManager.findTask(taskTitle);
-        //     const project = TaskManager.findProject(taskProject);
-
-        //     TaskManager.deleteTask(task, project);
-        //     currentTaskDiv.remove();
-        // });
-
-        // make dropdown menu disssapear if clicked outside
-        // document.addEventListener('click', (event) => {
-        //     // Check if elements exist before proceeding
-        //     if (optionsBtn && dropdownMenu) {
-        //         if (!dropdownMenu.contains(event.target) && !optionsBtn.contains(event.target)) {
-        //             dropdownMenu.classList.remove('show');
-        //         }
-        //     }
-        // });
     }
 
 
@@ -298,58 +314,11 @@ export const DOMController = (function () {
 
 
 
-    // edit task form submition
-    editTaskForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-
-        const task = editTaskForm.currentTask;
-        if (!task) return;
-        
-        const newTitle = document.querySelector('.edit-task-form .task-title-input').value;
-        const newDescription = document.querySelector('.edit-task-form .description-input').value;
-        const newDueDate = document.querySelector('.edit-task-form .due-date').value;
-        const newPriority = document.querySelector('.edit-task-form .priority').value;
-        const newParentProjectTitle = document.querySelector('.edit-task-form .project-select').value;
-        const newParentProject = TaskManager.findProject(newParentProjectTitle);
-
-        const taskDiv = document.querySelector(`.task-div[data-title="${task.getTitle()}"]`);
-        const titleElement = taskDiv.querySelector('.task-title');
-        const descriptionElement = taskDiv.querySelector('.description');
-        const dueDateElement = taskDiv.querySelector('.due-date');
-        const priorityElement = taskDiv.querySelector('.priority');
-        const parentProjectElement = taskDiv.querySelector('.project-title');
-
-        const oldProject = task.getProject();
-        oldProject.deleteTask(task);
-        
-        task.setTitle(newTitle);
-        task.setDescription(newDescription);
-        task.setDueDate(newDueDate);
-        task.setPriority(newPriority);
-        task.setProject(newParentProject);
-
-        newParentProject.addTask(task);
-
-        titleElement.textContent = newTitle;
-        descriptionElement.textContent = newDescription;
-        dueDateElement.textContent = newDueDate;
-        priorityElement.textContent = newPriority;
-        parentProjectElement.textContent = `Project: ${newParentProjectTitle}`;
-
-        taskDiv.setAttribute('data-title', newTitle);
-        taskDiv.setAttribute('data-project', newParentProjectTitle);
-
-        editTaskForm.close();
-    });
-
-
-
-
 
     // render projects in the sidebar
     function renderProjects(projects) {
         projectsList.innerHTML = ''; 
-        projects.forEach(updateProjectsList);
+        projects.forEach(addProjectTab);
     }
 
 
@@ -361,7 +330,7 @@ export const DOMController = (function () {
         const projects = TaskManager.getProjects();
         projects.forEach(project => {
             const tasks = project.getTasks();
-            tasks.forEach(updateTasksList);
+            tasks.forEach(addTaskDiv);
         });
     }
 
@@ -371,7 +340,7 @@ export const DOMController = (function () {
     // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
     function renderTasks(tasks) {
         tasksList.innerHTML = ''; 
-        tasks.forEach(updateTasksList);
+        tasks.forEach(addTaskDiv);
     }
 
 
@@ -461,5 +430,5 @@ export const DOMController = (function () {
 
 
 
-    return { updateProjectsList, updateTasksList, renderProjects, renderAllTasks, renderTasks, updateProjectDropdown, deactivateTabs, makeTabActive }
+    return { addProjectTab, addTaskDiv, renderProjects, renderAllTasks, renderTasks, updateProjectDropdown, deactivateTabs, makeTabActive }
 })();
