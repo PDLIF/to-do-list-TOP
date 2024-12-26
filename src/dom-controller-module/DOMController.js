@@ -51,7 +51,14 @@ export const DOMController = (function () {
     
     
     
-    function createDropdownMenu() {
+    function createTaskOptions() {
+        const optionsWrapper = document.createElement('div');
+        optionsWrapper.classList.add('task-options-wrapper');
+        
+        const optionsBtn = document.createElement('div');
+        optionsBtn.classList.add('task-options-btn');
+        optionsBtn.textContent = '⋮';
+        
         const dropdownContainer = document.createElement("div");
         dropdownContainer.classList.add("task-options-container");
         
@@ -73,8 +80,24 @@ export const DOMController = (function () {
             optionElement.addEventListener("click", option.onClick);
             dropdownContainer.append(optionElement);
         });
+
+        optionsBtn.addEventListener('click', () => {
+            dropdownContainer.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (event) => {
+            // Check if elements exist before proceeding
+            if (optionsBtn && dropdownContainer) {
+                if (!dropdownContainer.contains(event.target) && !optionsBtn.contains(event.target)) {
+                    dropdownContainer.classList.remove('show');
+                }
+            }
+        });
+
+        optionsWrapper.appendChild(optionsBtn);
+        optionsWrapper.appendChild(dropdownContainer);
         
-        return dropdownContainer;
+        return optionsWrapper;
     }
     
     
@@ -138,60 +161,22 @@ export const DOMController = (function () {
         priority.textContent = task.getPriority();
         priorityWrapper.appendChild(priority);
 
-        const optionsWrapper = document.createElement('div');
-        optionsWrapper.classList.add('task-options-wrapper');
-        
-        const optionsBtn = document.createElement('div');
-        optionsBtn.classList.add('task-options-btn');
-        optionsBtn.textContent = '⋮';
+        const dropdownMenu = createTaskOptions();
 
 
-
-
-
-
-
-    
-        // const dropdownMenu = document.createElement('div');
-        // dropdownMenu.classList.add('dropdown-menu');
-
-        // const editOption = document.createElement('div');
-        // editOption.classList.add('dropdown-item');
-        // editOption.classList.add('task-edit-btn');
-        // editOption.textContent = 'Edit';
-
-        // const deleteOption = document.createElement('div');
-        // deleteOption.classList.add('dropdown-item');
-        // deleteOption.classList.add('task-delete-btn');
-        // deleteOption.textContent = 'Delete';
-    
-        // dropdownMenu.appendChild(editOption);
-        // dropdownMenu.appendChild(deleteOption);
-
-        const dropdownMenu = createDropdownMenu();
-
-
-
-
-
-
-
-
-        optionsWrapper.appendChild(optionsBtn);
-        optionsWrapper.appendChild(dropdownMenu);
 
         taskDiv.appendChild(heading);
         taskDiv.appendChild(description);
         taskDiv.appendChild(dueDateWrapper);
         taskDiv.appendChild(priorityWrapper);
-        taskDiv.appendChild(optionsWrapper);
+        taskDiv.appendChild(dropdownMenu);
 
         tasksList.appendChild(taskDiv);
 
         // make dropdown menu visible
-        optionsBtn.addEventListener('click', () => {
-            dropdownMenu.classList.toggle('show');
-        });
+        // optionsBtn.addEventListener('click', () => {
+        //     dropdownMenu.classList.toggle('show');
+        // });
         
         // options btn event listener
         // editOption.addEventListener('click', (event) => {
@@ -233,14 +218,14 @@ export const DOMController = (function () {
         // });
 
         // make dropdown menu disssapear if clicked outside
-        document.addEventListener('click', (event) => {
-            // Check if elements exist before proceeding
-            if (optionsBtn && dropdownMenu) {
-                if (!dropdownMenu.contains(event.target) && !optionsBtn.contains(event.target)) {
-                    dropdownMenu.classList.remove('show');
-                }
-            }
-        });
+        // document.addEventListener('click', (event) => {
+        //     // Check if elements exist before proceeding
+        //     if (optionsBtn && dropdownMenu) {
+        //         if (!dropdownMenu.contains(event.target) && !optionsBtn.contains(event.target)) {
+        //             dropdownMenu.classList.remove('show');
+        //         }
+        //     }
+        // });
     }
 
 
