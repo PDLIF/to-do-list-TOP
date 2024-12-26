@@ -10,6 +10,80 @@ export const DOMController = (function () {
     const addProjectForm = document.querySelector(".add-project-form-dialog");
     const editTaskForm = document.querySelector(".edit-task-form-dialog");
 
+
+
+    function handleDeleteTask(event) {
+        const currentTaskDiv = event.currentTarget.closest('.task-div');
+        const taskTitle = currentTaskDiv.dataset.title;
+        const taskProject = currentTaskDiv.dataset.project;
+
+        const task = TaskManager.findTask(taskTitle);
+        const project = TaskManager.findProject(taskProject);
+
+        TaskManager.deleteTask(task, project);
+        currentTaskDiv.remove();
+    }
+
+    function openEditForm(event) {
+        editTaskForm.showModal();
+
+        const currentTaskDiv = event.currentTarget.closest('.task-div');
+
+        const taskTitle = currentTaskDiv.dataset.title;
+        const parentProjectTitle = currentTaskDiv.dataset.project;
+
+        const task = TaskManager.findTask(taskTitle);
+
+        const titleField = document.querySelector('.edit-task-form .task-title-input');
+        const descriptionField = document.querySelector('.edit-task-form .description-input');
+        const dueDateField = document.querySelector('.edit-task-form .due-date');
+        const priorityField = document.querySelector('.edit-task-form .priority');
+        const parentProjectField = document.querySelector('.edit-task-form .project-select');
+
+        titleField.value = task.getTitle();
+        descriptionField.value = task.getDescription();
+        dueDateField.value = task.getDueDate();
+        priorityField.value = task.getPriority();
+        parentProjectField.value = task.getProject().getTitle();
+
+        editTaskForm.currentTask = task;
+    }
+    
+    
+    
+    function createDropdownMenu() {
+        const dropdownContainer = document.createElement("div");
+        dropdownContainer.classList.add("task-options-container");
+        
+        const options = [
+            {
+                label: "Edit",
+                onClick: (event) => openEditForm(event)
+            },
+            {
+                label: "Delete",
+                onClick: (event) => handleDeleteTask(event)
+            }
+        ];
+        
+        options.forEach(option => {
+            const optionElement = document.createElement("div");
+            optionElement.classList.add("dropdown-option");
+            optionElement.textContent = option.label;
+            optionElement.addEventListener("click", option.onClick);
+            dropdownContainer.append(optionElement);
+        });
+        
+        return dropdownContainer;
+    }
+    
+    
+    
+
+
+
+    
+    
     // adding a DOM project element to the sidebar
     function updateProjectsList(project) {
         const projectBtn = document.createElement('li');
@@ -70,22 +144,38 @@ export const DOMController = (function () {
         const optionsBtn = document.createElement('div');
         optionsBtn.classList.add('task-options-btn');
         optionsBtn.textContent = '⋮';
-    
-        const dropdownMenu = document.createElement('div');
-        dropdownMenu.classList.add('dropdown-menu');
 
-        const editOption = document.createElement('div');
-        editOption.classList.add('dropdown-item');
-        editOption.classList.add('task-edit-btn');
-        editOption.textContent = 'Edit';
 
-        const deleteOption = document.createElement('div');
-        deleteOption.classList.add('dropdown-item');
-        deleteOption.classList.add('task-delete-btn');
-        deleteOption.textContent = 'Delete';
+
+
+
+
+
     
-        dropdownMenu.appendChild(editOption);
-        dropdownMenu.appendChild(deleteOption);
+        // const dropdownMenu = document.createElement('div');
+        // dropdownMenu.classList.add('dropdown-menu');
+
+        // const editOption = document.createElement('div');
+        // editOption.classList.add('dropdown-item');
+        // editOption.classList.add('task-edit-btn');
+        // editOption.textContent = 'Edit';
+
+        // const deleteOption = document.createElement('div');
+        // deleteOption.classList.add('dropdown-item');
+        // deleteOption.classList.add('task-delete-btn');
+        // deleteOption.textContent = 'Delete';
+    
+        // dropdownMenu.appendChild(editOption);
+        // dropdownMenu.appendChild(deleteOption);
+
+        const dropdownMenu = createDropdownMenu();
+
+
+
+
+
+
+
 
         optionsWrapper.appendChild(optionsBtn);
         optionsWrapper.appendChild(dropdownMenu);
@@ -104,43 +194,43 @@ export const DOMController = (function () {
         });
         
         // options btn event listener
-        editOption.addEventListener('click', (event) => {
-            editTaskForm.showModal();
+        // editOption.addEventListener('click', (event) => {
+        //     editTaskForm.showModal();
 
-            const taskDiv = event.currentTarget.closest('.task-div');
+        //     const taskDiv = event.currentTarget.closest('.task-div');
 
-            const taskTitle = taskDiv.dataset.title;
-            const parentProjectTitle = taskDiv.dataset.project;
+        //     const taskTitle = taskDiv.dataset.title;
+        //     const parentProjectTitle = taskDiv.dataset.project;
 
-            const task = TaskManager.findTask(taskTitle);
+        //     const task = TaskManager.findTask(taskTitle);
 
-            const titleField = document.querySelector('.edit-task-form .task-title-input');
-            const descriptionField = document.querySelector('.edit-task-form .description-input');
-            const dueDateField = document.querySelector('.edit-task-form .due-date');
-            const priorityField = document.querySelector('.edit-task-form .priority');
-            const parentProjectField = document.querySelector('.edit-task-form .project-select');
+        //     const titleField = document.querySelector('.edit-task-form .task-title-input');
+        //     const descriptionField = document.querySelector('.edit-task-form .description-input');
+        //     const dueDateField = document.querySelector('.edit-task-form .due-date');
+        //     const priorityField = document.querySelector('.edit-task-form .priority');
+        //     const parentProjectField = document.querySelector('.edit-task-form .project-select');
 
-            titleField.value = title.textContent;
-            descriptionField.value = description.textContent;
-            dueDateField.value = dueDate.textContent;
-            priorityField.value = priority.textContent;
-            parentProjectField.value = parentProjectTitle;
+        //     titleField.value = title.textContent;
+        //     descriptionField.value = description.textContent;
+        //     dueDateField.value = dueDate.textContent;
+        //     priorityField.value = priority.textContent;
+        //     parentProjectField.value = parentProjectTitle;
 
-            editTaskForm.currentTask = task;
-        });
+        //     editTaskForm.currentTask = task;
+        // });
 
         // remove task
-        deleteOption.addEventListener('click', (event) => {
-            const currentTask = event.currentTarget.closest('.task-div');
-            const taskTitle = currentTask.dataset.title;
-            const taskProject = currentTask.dataset.project;
+        // deleteOption.addEventListener('click', (event) => {
+        //     const currentTaskDiv = event.currentTarget.closest('.task-div');
+        //     const taskTitle = currentTaskDiv.dataset.title;
+        //     const taskProject = currentTaskDiv.dataset.project;
 
-            const task = TaskManager.findTask(taskTitle);
-            const project = TaskManager.findProject(taskProject);
+        //     const task = TaskManager.findTask(taskTitle);
+        //     const project = TaskManager.findProject(taskProject);
 
-            TaskManager.deleteTask(task, project);
-            currentTask.remove();
-        });
+        //     TaskManager.deleteTask(task, project);
+        //     currentTaskDiv.remove();
+        // });
 
         // make dropdown menu disssapear if clicked outside
         document.addEventListener('click', (event) => {
