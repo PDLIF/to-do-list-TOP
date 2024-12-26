@@ -17,11 +17,6 @@ export const App = (function () {
         DOMController.renderTasks(defaultProject.getTasks());
         DOMController.renderProjects(allProjects);
         DOMController.updateProjectDropdown(TaskManager.getProjects());
-
-        // document.querySelector('.side-menu').addEventListener(event => {
-        //     const clickedTab = event.target.closest('.tab');
-        //     DOMController.makeTabActive(clickedTab);
-        // });
     }
     
     return { initialize }
