@@ -219,7 +219,7 @@ body {
     background-color: rgb(216, 216, 216);
 }
 
-.dropdown-menu {
+.task-options-container {
     display: none;
     
     width: 70px;
@@ -236,12 +236,12 @@ body {
     flex-direction: column;
 }
 
-.dropdown-menu .dropdown-item {
+.task-options-container .dropdown-option {
     padding: 5px 10px;
     cursor: pointer;
 }
 
-.dropdown-menu .dropdown-item:hover {
+.task-options-container .dropdown-option:hover {
     background-color: #e1e1e1;
 }
 
