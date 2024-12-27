@@ -231,13 +231,20 @@ body {
     z-index: 999;
 }
 
+.task-options-container {
+    padding: 5px;
+    border-radius: 10px;
+}
+
 .task-options-wrapper .show {
     display: flex;
     flex-direction: column;
+    gap: 3px;
 }
 
 .task-options-container .dropdown-option {
     padding: 5px 10px;
+    border-radius: 10px;
     cursor: pointer;
 }
 

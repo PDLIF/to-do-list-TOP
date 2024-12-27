@@ -20,7 +20,7 @@ export const DOMController = (function () {
             console.error(`Task with name ${task.getTitle()} not found.`);
             return null;
         }
-    
+        
         task.setTitle(updates.title);
         task.setDescription(updates.description);
         task.setDueDate(updates.dueDate);
@@ -52,10 +52,15 @@ export const DOMController = (function () {
         taskDiv.querySelector(".priority").textContent = updatedTask.getPriority();
     }
 
+
+
+
+
+
     editTaskForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        const currentTask = editTaskFormModal.currentTask;
+        const currentTask = editTaskForm.currentTask;
         const oldTitle = currentTask.getTitle();
         const newTaskTitle = editTaskForm.elements.title.value;
 
@@ -120,7 +125,7 @@ export const DOMController = (function () {
         priorityField.value = task.getPriority();
         parentProjectField.value = task.getProject().getTitle();
 
-        editTaskFormModal.currentTask = task;
+        editTaskForm.currentTask = task;
     }
 
 
@@ -335,7 +340,62 @@ export const DOMController = (function () {
     }
 
 
+    function isTodayTask(task) {
+        const todayDate = new Date();
+        const taskDate = new Date(task.getDueDate());
 
+        return (
+            todayDate.getFullYear() === taskDate.getFullYear() &&
+            todayDate.getMonth() === taskDate.getMonth() &&
+            todayDate.getDate() === taskDate.getDate()
+        );
+    }
+
+    function isThisWeekTask(task) {
+        const today = new Date();
+        const taskDate = new Date(task.getDueDate());
+    
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+    
+        const endOfWeek = new Date(today);
+        endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
+    
+        return taskDate >= startOfWeek && taskDate <= endOfWeek;
+    }
+
+
+    function renderTodayTasks() {
+        tasksList.innerHTML = '';
+        const projects = TaskManager.getProjects();
+
+        projects.forEach(project => {
+            const projectTasks = project.getTasks();
+            projectTasks.forEach(task => {
+                const isToday = isTodayTask(task);
+                if (isToday) {
+                    addTaskDiv(task);
+                }
+            })
+        })
+    }
+    
+    function renderThisWeekTasks() {
+        tasksList.innerHTML = '';
+        const projects = TaskManager.getProjects();
+
+        projects.forEach(project => {
+            const projectTasks = project.getTasks();
+            projectTasks.forEach(task => {
+                const isThisWeek = isThisWeekTask(task);
+                if (isThisWeek) {
+                    addTaskDiv(task);
+                }
+            })
+        })
+    }
+    
+    
 
     // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
     function renderTasks(tasks) {
@@ -392,7 +452,15 @@ export const DOMController = (function () {
 
     // adding event listeners to tabs and buttons in the sidebar
     document.querySelector('.all-tasks-tab').addEventListener('click', () => {
-        DOMController.renderAllTasks();
+        renderAllTasks();
+    });
+
+    document.querySelector('.today-tasks-tab').addEventListener('click', () => {
+        renderTodayTasks();
+    });
+
+    document.querySelector('.this-week-tab').addEventListener('click', () => {
+        renderThisWeekTasks();
     });
 
     document.querySelector(".add-task-btn").addEventListener("click", () => {
