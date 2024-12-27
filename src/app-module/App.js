@@ -5,7 +5,7 @@ import { DOMController } from '../dom-controller-module/DOMController'
 
 export const App = (function () {
     function initialize() {
-        const allProjects = TaskManager.getProjects();
+        const allProjects = TaskManager.getAllProjects();
         const defaultProject = Project('Default Project');
         const newProject = Project('New Project');
         const testTask = Task("Sample Task", "A project with this title already exists. Please choose a different title.A project with this title already exists. Please choose a different title.", "2024-12-20", "High", defaultProject);
@@ -16,7 +16,7 @@ export const App = (function () {
 
         DOMController.renderTasks(defaultProject.getTasks());
         DOMController.renderProjects(allProjects);
-        DOMController.updateProjectDropdown(TaskManager.getProjects());
+        DOMController.updateProjectDropdown(TaskManager.getAllProjects());
     }
     
     return { initialize }
