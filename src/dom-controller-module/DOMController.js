@@ -70,6 +70,7 @@ export const DOMController = (function () {
         projects.forEach(project => TaskManager.addProject(project));
         DOMController.renderProjects(TaskManager.getAllProjects());
         renderAllTasks();
+        DOMController.updateProjectDropdown(TaskManager.getAllProjects());
     });
 
 
@@ -328,7 +329,7 @@ export const DOMController = (function () {
     
         // Hide modal
         editTaskFormModal.close();
-        // saveToLocalStorage();
+        saveToLocalStorage();
     }
     
 

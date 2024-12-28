@@ -17,8 +17,6 @@ export const App = (function () {
         DOMController.renderTasks(defaultProject.getTasks());
         DOMController.renderProjects(allProjects);
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
-    
-
     }
     
     return { initialize }
