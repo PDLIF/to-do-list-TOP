@@ -184,9 +184,10 @@ export const DOMController = (function () {
         setTaskImportantBtn(task, importantBtn);
 
         importantBtn.addEventListener('click', () => {
-            const taskIndex = TaskManager.getImportantTasks().indexOf(task);
+            // const taskIndex = TaskManager.isImportant(task);
+            const isImportant = task.getIsImportant();
     
-            if (taskIndex === -1) {
+            if (isImportant === false) {
                 // Task is not in favourites, add it
                 TaskManager.addImportantTask(task);
                 task.setIsImportant(true);
@@ -197,6 +198,7 @@ export const DOMController = (function () {
             }
     
             importantBtn.classList.toggle('active');
+            saveToLocalStorage();
         });
 
         return importantBtn;
@@ -528,7 +530,8 @@ export const DOMController = (function () {
 
     function renderImportantTasks() {
         tasksList.innerHTML = '';
-        const importantTasks = TaskManager.getImportantTasks();
+
+        const importantTasks = TaskManager.getAllTasks().filter(task => task.getIsImportant() === true);
         importantTasks.forEach(task => {
             addTaskDiv(task);
         });
