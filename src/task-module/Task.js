@@ -1,4 +1,4 @@
-export const Task = function(title, description, dueDate, priority, project) {
+export const Task = function(title, description, dueDate, priority, project, isImportant) {
     
     function getTitle() {
         return title;
@@ -41,8 +41,16 @@ export const Task = function(title, description, dueDate, priority, project) {
     }
 
     function serialize() {
-        return {title, description, dueDate, priority, project}
+        return {title, description, dueDate, priority, project, isImportant}
     }
 
-    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject, setProject, serialize }
+    function getIsImportant() {
+        return isImportant;
+    }
+
+    function setIsImportant(value) {
+        isImportant = value;
+    }
+
+    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject, setProject, getIsImportant, setIsImportant, serialize }
 }

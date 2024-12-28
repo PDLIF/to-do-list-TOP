@@ -25,6 +25,10 @@ export const TaskManager = (function () {
     function clearAllProjects() {
         allProjects.splice(0, allProjects.length);
     }
+
+    function clearImportantTasks() {
+        importantTasks.splice(0, importantTasks.length);
+    }
     
     function getImportantTasks() {
         return importantTasks;
@@ -43,6 +47,7 @@ export const TaskManager = (function () {
 
     function addImportantTask(task) {
         importantTasks.push(task);
+        task.setIsImportant(true);
     }
 
     function deleteTask(task, project) {
@@ -59,11 +64,8 @@ export const TaskManager = (function () {
     function deleteImportantTask(task) {
         const index = importantTasks.findIndex((t) => t.getTitle() === task.getTitle());
 
-        if (index !== -1) {
-            importantTasks.splice(index, 1);
-        } else {
-            console.log('error');
-        }
+        importantTasks.splice(index, 1);
+        task.setIsImportant(true);
     }
 
     function findProject(projectTitle) {
@@ -84,6 +86,6 @@ export const TaskManager = (function () {
         return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
-    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, addImportantTask, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
+    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
 })();
 

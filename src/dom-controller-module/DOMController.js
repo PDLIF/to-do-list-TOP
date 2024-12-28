@@ -41,7 +41,7 @@ export const DOMController = (function () {
 
     function rebuildTask(data, parentProject) {
         const rebuildParentProject = parentProject;
-        return Task(data.title, data.description, data.dueDate, data.priority, rebuildParentProject);
+        return Task(data.title, data.description, data.dueDate, data.priority, rebuildParentProject, data.isImportant);
     }
 
     
@@ -67,10 +67,12 @@ export const DOMController = (function () {
 
         TaskManager.clearAllProjects();
         TaskManager.clearAllTasks();
+
         projects.forEach(project => TaskManager.addProject(project));
+
         DOMController.renderProjects(TaskManager.getAllProjects());
-        renderAllTasks();
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
+        renderAllTasks();
     });
 
 
@@ -187,9 +189,11 @@ export const DOMController = (function () {
             if (taskIndex === -1) {
                 // Task is not in favourites, add it
                 TaskManager.addImportantTask(task);
+                task.setIsImportant(true);
             } else {
                 // Task is already in favourites, remove it
                 TaskManager.deleteImportantTask(task);
+                task.setIsImportant(false);
             }
     
             importantBtn.classList.toggle('active');
@@ -403,7 +407,6 @@ export const DOMController = (function () {
         
         DOMController.renderProjects(TaskManager.getAllProjects());
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
-        // saveToLocalStorage();
     }
     
     
@@ -449,7 +452,6 @@ export const DOMController = (function () {
         }
 
         addTaskFormModal.close();
-        // saveToLocalStorage();
     }
 
     // render projects in the sidebar
@@ -537,10 +539,15 @@ export const DOMController = (function () {
 
 
     function setTaskImportantBtn(task, btn) {
-        const isImportant = TaskManager.isImportant(task);
+        const isImportant = task.getIsImportant();
+        console.log(isImportant)
 
-        if (isImportant) {
+        if (isImportant === true) {
+            task.setIsImportant(true);
             btn.classList.add('active');
+        } else {
+            task.setIsImportant(false);
+            btn.classList.remove('active');
         }
     }
     
