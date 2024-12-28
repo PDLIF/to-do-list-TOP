@@ -26,5 +26,10 @@ export const Project = function (title) {
         tasks.splice(index, 1);
     }
 
-    return { getTitle, getTasks, addTask, setTitle, findTask, deleteTask }
+    function serializeProject() {
+        return {title, tasks: tasks.map(task => task.serialize())}
+    }
+    
+
+    return { getTitle, getTasks, addTask, setTitle, findTask, deleteTask, serializeProject }
 }

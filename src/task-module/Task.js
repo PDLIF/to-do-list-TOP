@@ -40,5 +40,9 @@ export const Task = function(title, description, dueDate, priority, project) {
         project = newProject;
     }
 
-    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject, setProject }
+    function serialize() {
+        return {title, description, dueDate, priority, project}
+    }
+
+    return { getTitle, setTitle, getDescription, setDescription, getDueDate, setDueDate, getPriority, setPriority, getProject, setProject, serialize }
 }

@@ -18,12 +18,23 @@ export const TaskManager = (function () {
         return allTasks;
     }
 
+    function clearAllTasks() {
+        allTasks.splice(0, allTasks.length);
+    }
+
+    function clearAllProjects() {
+        allProjects.splice(0, allProjects.length);
+    }
+    
     function getImportantTasks() {
         return importantTasks;
     }
 
     function addProject(project) {
         allProjects.push(project);
+        
+        const projectTasks = project.getTasks();
+        projectTasks.forEach(task => allTasks.push(task));
     }
 
     function addTask(task, project) {
@@ -73,6 +84,6 @@ export const TaskManager = (function () {
         return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
-    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, addImportantTask, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
+    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, addImportantTask, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
 })();
 

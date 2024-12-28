@@ -1,6 +1,7 @@
 import { TaskManager } from "../task-manager-module/TaskManager";
 import { Project } from '../project-module/Project';
 import { Task } from '../task-module/Task';
+// import { LocalStorageManager } from '../local-storage';
 
 export const DOMController = (function () {
     const projectsList = document.querySelector('.projects-list');
@@ -21,8 +22,62 @@ export const DOMController = (function () {
     const importantTasksTab = document.querySelector('.important-tab');
 
     const addTaskBtn = document.querySelector(".add-task-btn");
-    const addProjectBtn = document.querySelector(".add-project-btn")
+    const addProjectBtn = document.querySelector(".add-project-btn");
+
+
     
+
+    function rebuildProject(data) {
+        const tasks = data.tasks || [];
+        const project = Project(data.title);
+
+        data.tasks.forEach(taskData => {
+            const task = rebuildTask(taskData, project);
+            project.addTask(task);
+        });
+
+        return project;
+    }
+
+    function rebuildTask(data, parentProject) {
+        const rebuildParentProject = parentProject;
+        return Task(data.title, data.description, data.dueDate, data.priority, rebuildParentProject);
+    }
+
+    
+
+    function saveToLocalStorage() {
+        const projects = TaskManager.getAllProjects(); // Assuming TaskManager holds your projects and tasks.
+        const serializedData = projects.map(project => project.serializeProject());
+        localStorage.setItem('todoAppData', JSON.stringify(serializedData)); // Save to localStorage.
+    }
+
+    function loadFromLocalStorage() {
+        const data = localStorage.getItem('todoAppData');
+        if (!data) return [];
+    
+        const parsedData = JSON.parse(data); // Plain objects
+        return parsedData.map(rebuildProject); // Rebuild as Project objects
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const projects = loadFromLocalStorage();
+        renderProjects(projects);
+        // DOMController.renderAllTasks();
+
+        TaskManager.clearAllProjects();
+        TaskManager.clearAllTasks();
+        projects.forEach(project => TaskManager.addProject(project));
+        DOMController.renderProjects(TaskManager.getAllProjects());
+        renderAllTasks();
+    });
+
+
+
+
+
+
+
 
 
 
@@ -247,7 +302,7 @@ export const DOMController = (function () {
 
 
 
-    function editFormSubmit(event) {
+    function editTaskFormSubmit(event) {
         event.preventDefault();
 
         const currentTask = editTaskForm.currentTask;
@@ -273,6 +328,7 @@ export const DOMController = (function () {
     
         // Hide modal
         editTaskFormModal.close();
+        // saveToLocalStorage();
     }
     
 
@@ -289,6 +345,8 @@ export const DOMController = (function () {
 
         TaskManager.deleteTask(task, project);
         currentTaskDiv.remove();
+        
+        saveToLocalStorage();
     }
 
 
@@ -344,6 +402,7 @@ export const DOMController = (function () {
         
         DOMController.renderProjects(TaskManager.getAllProjects());
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
+        // saveToLocalStorage();
     }
     
     
@@ -389,6 +448,7 @@ export const DOMController = (function () {
         }
 
         addTaskFormModal.close();
+        // saveToLocalStorage();
     }
 
     // render projects in the sidebar
@@ -477,7 +537,6 @@ export const DOMController = (function () {
 
     function setTaskImportantBtn(task, btn) {
         const isImportant = TaskManager.isImportant(task);
-        console.log(isImportant)
 
         if (isImportant) {
             btn.classList.add('active');
@@ -541,15 +600,18 @@ export const DOMController = (function () {
     // add project form submition
     addProjectForm.addEventListener('submit', (event) => {       
         addProjectFormSubmit(event);
+        saveToLocalStorage();
     });
     
     // add task form submition
     addTaskForm.addEventListener('submit', (event) => {
         addTaskFormSubmit(event);
+        saveToLocalStorage();
     });
     
     editTaskForm.addEventListener("submit", (event) => {
-        editFormSubmit(event);
+        editTaskFormSubmit(event);
+        saveToLocalStorage();
     });
 
     // adding event listeners to tabs and buttons in the sidebar
