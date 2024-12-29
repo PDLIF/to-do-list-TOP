@@ -14,8 +14,12 @@
     --main-bg-color: #010409;
     --sidebar-bg-color: #0D1117;
     --tab-color: #151B23;
+    --tab-color-active: #1c232b;
     --task-div-color: #0D1117;
     --task-options-btn: #262e38;
+    --task-options-btn-hover: #384452;
+    --task-options-menu-bg: #1c232b;
+    --task-options-menu-option: #2d3945;
 }
 
 * {
@@ -107,11 +111,11 @@ body {
 }
 
 .side-menu .active {
-    background-color: var(--tab-color);
+    background-color: var(--tab-color-active);
 }
 
-.projects-list .tab .active, .projects-list .tab .active:hover {
-    background-color: #dacfa6;
+.side-menu .active:hover {
+    background-color: var(--tab-color-active);
 }
 
 .forms {
@@ -280,7 +284,7 @@ body {
 }
 
 .task-div .task-options-btn:hover {
-    background-color: rgb(190, 190, 190);
+    background-color: var(--task-options-btn-hover);
 }
 
 .task-div .task-options-btn:active {
@@ -291,7 +295,7 @@ body {
     display: none;
     
     width: 70px;
-    background-color: #cecece;
+    background-color: var(--task-options-menu-bg);
     
     position: absolute;
     top: 30px;
@@ -317,7 +321,7 @@ body {
 }
 
 .task-options-container .dropdown-option:hover {
-    background-color: #e1e1e1;
+    background-color: var(--task-options-menu-option);
 }
 
 .task-div .due-date-wrapper {

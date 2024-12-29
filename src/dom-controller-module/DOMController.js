@@ -64,7 +64,6 @@ export const DOMController = (function () {
     document.addEventListener('DOMContentLoaded', () => {
         const projects = loadFromLocalStorage();
         renderProjects(projects);
-        // DOMController.renderAllTasks();
 
         TaskManager.clearAllProjects();
         TaskManager.clearAllTasks();
