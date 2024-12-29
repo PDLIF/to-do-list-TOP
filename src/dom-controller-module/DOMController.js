@@ -1,7 +1,8 @@
 import { TaskManager } from "../task-manager-module/TaskManager";
 import { Project } from '../project-module/Project';
 import { Task } from '../task-module/Task';
-// import { LocalStorageManager } from '../local-storage';
+
+import projectDeleteIconPath from '../assets/delete-project-btn/delete-project-icon.svg';
 
 export const DOMController = (function () {
     const projectsList = document.querySelector('.projects-list');
@@ -95,8 +96,26 @@ export const DOMController = (function () {
         title.classList.add('project-title');
         title.textContent = project.getTitle();
 
+        const projectDeleteBtn = document.createElement('div');
+        projectDeleteBtn.classList.add('project-delete-btn');
+
+        const projectDeleteIcon = document.createElement('img');
+        projectDeleteIcon.classList.add('project-delete-icon');
+        projectDeleteIcon.src = projectDeleteIconPath;
+
+        projectDeleteBtn.appendChild(projectDeleteIcon);
         projectBtn.appendChild(title);
+        projectBtn.appendChild(projectDeleteBtn);
         projectsList.appendChild(projectBtn);
+
+        projectDeleteBtn.addEventListener('click', (event) => {
+            const projectTab = event.currentTarget.closest('.tab');
+            const projectTitle = projectTab.dataset.title;
+            TaskManager.deleteProject(projectTitle);
+            projectTab.remove();
+
+            saveToLocalStorage();
+        });
     }
 
 
@@ -298,6 +317,10 @@ export const DOMController = (function () {
             return;
         }
     
+        console.log(taskDiv.querySelector(".description"));
+        // console.log(taskDiv.querySelector(".task-title").textContent);
+        // console.log(updatedTask);
+        
         taskDiv.querySelector(".task-title").textContent = updatedTask.getTitle();
         taskDiv.querySelector(".project-title").textContent = `Project: ${updatedTask.getProject().getTitle()}`;
         taskDiv.querySelector(".description").textContent = updatedTask.getDescription();
@@ -465,11 +488,14 @@ export const DOMController = (function () {
     // display all tasks
     function renderAllTasks() {
         tasksList.innerHTML = ''; 
+
         const projects = TaskManager.getAllProjects();
         projects.forEach(project => {
             const tasks = project.getTasks();
             tasks.forEach(addTaskDiv);
         });
+
+        DOMController.makeTabActive(allTasksTab);
     }
 
 
@@ -543,7 +569,6 @@ export const DOMController = (function () {
 
     function setTaskImportantBtn(task, btn) {
         const isImportant = task.getIsImportant();
-        console.log(isImportant)
 
         if (isImportant === true) {
             task.setIsImportant(true);
@@ -652,31 +677,27 @@ export const DOMController = (function () {
 
 
     // making a clicked tab active
-    function makeClickedTabActive() {
-        homeAndProjectsLists.forEach(list => {
-            list.addEventListener('click', event => {
-                const clickedTab = event.target.closest('.tab');
-                if (clickedTab) {
-                    DOMController.makeTabActive(clickedTab);
-                }
-            });
+    homeAndProjectsLists.forEach(list => {
+        list.addEventListener('click', event => {
+            const clickedTab = event.target.closest('.tab');
+            if (clickedTab) {
+                DOMController.makeTabActive(clickedTab);
+            }
         });
-    }
+    });
 
 
 
     projectsList.addEventListener('click', (event) => {
-        const clickedElement = event.target.closest('.projects-list-tab'); // Find the closest project div
+        const clickedElement = event.currentTarget;
+        const projectTab = event.target.closest('.projects-list-tab'); // Find the closest project tab
+        const projectDeleteBtn = event.target.closest('.project-delete-btn'); // Find the closest project tab
 
-        if (!clickedElement) {return}
-
-        const projectTitle = clickedElement.getAttribute('data-title');
-        const project = TaskManager.findProject(projectTitle);
-        DOMController.renderTasks(project.getTasks());
+        if (clickedElement === projectDeleteBtn) {return}
+        
+        const projectTitle = projectTab.getAttribute('data-title');
+        renderAllTasks();
     });
-
-
-    makeClickedTabActive();
 
 
     return { addProjectTab, addTaskDiv, renderProjects, renderAllTasks, renderTasks, updateProjectDropdown, deactivateTabs, makeTabActive }

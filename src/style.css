@@ -80,6 +80,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* line-height: 2.1; */
 }
 
 .side-menu .btn:hover, .side-menu li:hover {
@@ -129,6 +130,44 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.projects-list-tab {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.projects-list-tab .project-delete-btn {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    
+    min-width: 25px;
+    min-height: 25px;
+
+    margin-right: 10px;
+
+    border-radius: 4px;
+
+    background-color: #b0a57d;
+}
+
+.projects-list-tab:hover .project-delete-btn {
+    display: flex;
+}
+
+.projects-list-tab .project-delete-btn:hover {
+    background-color: #c3b78b;
+}
+
+.projects-list-tab .project-delete-btn:active {
+    background-color: #b0a57d;
+}
+
+.project-delete-icon {
+    width: 20px;
 }
 
 .tasks-list {

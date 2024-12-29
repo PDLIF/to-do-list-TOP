@@ -50,6 +50,16 @@ export const TaskManager = (function () {
         task.setIsImportant(true);
     }
 
+    function deleteProject(projectTitle) {
+        const projectToDelete = findProject(projectTitle);
+
+        const projectTasks = projectToDelete.getTasks();
+        projectTasks.forEach(task => deleteTask(task, projectToDelete));
+
+        const projectToDeleteIndex = allProjects.findIndex((p) => p.getTitle() === projectToDelete.getTitle());
+        allProjects.splice(projectToDeleteIndex, 1);
+    }
+
     function deleteTask(task, project) {
         const tasks = project.getTasks();
         const index = tasks.findIndex((t) => t.getTitle() === task.getTitle());
@@ -86,6 +96,6 @@ export const TaskManager = (function () {
         return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
-    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
+    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteProject, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
 })();
 
