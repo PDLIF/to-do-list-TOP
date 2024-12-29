@@ -10,6 +10,12 @@
     --h2: 84px;
     --h1: 119px;
     --cta-logo-cize: 150px;
+
+    --main-bg-color: #010409;
+    --sidebar-bg-color: #0D1117;
+    --tab-color: #151B23;
+    --task-div-color: #0D1117;
+    --task-options-btn: #262e38;
 }
 
 * {
@@ -34,8 +40,9 @@ a {
 
 body {
     font-family: 'Poppins', sans-serif;
+    color: #ffff;
     font-size: var(--p);
-    background-color: rgb(244, 241, 241);
+    background-color: var(--main-bg-color);
 }
 
 .main {
@@ -54,7 +61,7 @@ body {
     min-height: 100vh;
     max-height: 100%;
     padding: 2rem 0;
-    background-color: #f5e5c4;
+    background-color: var(--sidebar-bg-color);
 }
 
 .side-menu .home-list {
@@ -84,7 +91,7 @@ body {
 }
 
 .side-menu .btn:hover, .side-menu li:hover {
-    background-color: #dacfa6;
+    background-color: var(--tab-color);
 }
 
 .side-menu .add-task-btn {
@@ -100,7 +107,7 @@ body {
 }
 
 .side-menu .active {
-    background-color: #dacfa6;
+    background-color: var(--tab-color);
 }
 
 .projects-list .tab .active, .projects-list .tab .active:hover {
@@ -194,7 +201,7 @@ body {
 
     padding: .7rem 1rem 1rem 1rem;
     border-radius: 1rem;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--task-div-color);
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05);
 
     border: 2px solid rgb(82, 82, 82);
@@ -264,7 +271,7 @@ body {
 }
 
 .task-div .task-options-btn {
-    background-color: rgb(216, 216, 216);
+    background-color: var(--task-options-btn);
     right: .5rem;
     top: .5rem;
     padding: 1px 8px;

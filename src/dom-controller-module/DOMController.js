@@ -689,14 +689,18 @@ export const DOMController = (function () {
 
 
     projectsList.addEventListener('click', (event) => {
-        const clickedElement = event.currentTarget;
-        const projectTab = event.target.closest('.projects-list-tab'); // Find the closest project tab
+        const clickedElement = event.target;
+        const projectTitleElement = event.target.closest('.project-title');
+        const projectTab = event.target.closest('.tab'); // Find the closest project tab
         const projectDeleteBtn = event.target.closest('.project-delete-btn'); // Find the closest project tab
+        console.log(clickedElement)
 
-        if (clickedElement === projectDeleteBtn) {return}
-        
-        const projectTitle = projectTab.getAttribute('data-title');
-        renderAllTasks();
+        if (clickedElement === projectTitleElement ||
+            clickedElement === projectTab) {
+            const projectTitle = projectTab.getAttribute('data-title');
+            const project = TaskManager.findProject(projectTitle);
+            DOMController.renderTasks(project.getTasks());
+        }
     });
 
 
