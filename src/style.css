@@ -13,13 +13,21 @@
 
     --main-bg-color: #010409;
     --sidebar-bg-color: #0D1117;
-    --tab-color: #151B23;
+
+    --tab-color-hover: #151B23;
     --tab-color-active: #1c232b;
+
     --task-div-color: #0D1117;
+
     --task-options-btn: #262e38;
     --task-options-btn-hover: #384452;
     --task-options-menu-bg: #1c232b;
     --task-options-menu-option: #2d3945;
+    --task-options-menu-option-active: #242f39;
+
+    --task-delete-btn-bg: #303e4c;
+    --task-delete-btn-bg-hover: #3f5163;
+    --task-delete-btn-bg-active: #303e4c;
 }
 
 * {
@@ -95,7 +103,7 @@ body {
 }
 
 .side-menu .btn:hover, .side-menu li:hover {
-    background-color: var(--tab-color);
+    background-color: var(--tab-color-hover);
 }
 
 .side-menu .add-task-btn {
@@ -162,19 +170,19 @@ body {
 
     border-radius: 4px;
 
-    background-color: #b0a57d;
+    background-color: var(--task-delete-btn-bg);
 }
 
-.projects-list-tab:hover .project-delete-btn {
+.projects-list-tab.active .project-delete-btn, .projects-list-tab:hover .project-delete-btn {
     display: flex;
 }
 
 .projects-list-tab .project-delete-btn:hover {
-    background-color: #c3b78b;
+    background-color: var(--task-delete-btn-bg-hover);
 }
 
 .projects-list-tab .project-delete-btn:active {
-    background-color: #b0a57d;
+    background-color: var(--task-delete-btn-bg-active);
 }
 
 .project-delete-icon {
@@ -288,7 +296,7 @@ body {
 }
 
 .task-div .task-options-btn:active {
-    background-color: rgb(216, 216, 216);
+    background-color: var(--task-options-btn);
 }
 
 .task-options-container {
@@ -322,6 +330,10 @@ body {
 
 .task-options-container .dropdown-option:hover {
     background-color: var(--task-options-menu-option);
+}
+
+.task-options-container .dropdown-option:active {
+    background-color: var(--task-options-menu-option-active);
 }
 
 .task-div .due-date-wrapper {
