@@ -29,10 +29,10 @@
     --task-delete-btn-bg-hover: #3f5163;
     --task-delete-btn-bg-active: #303e4c;
 
-    --low-priority-color: red;
-    --medium-priority-color:green;
-    --high-priority-color:blue;
-    --critical-priority-color:orange;
+    --low-priority-color: rgb(1, 106, 1);
+    --medium-priority-color:rgb(64, 64, 181);
+    --high-priority-color:rgb(219, 155, 36);
+    --critical-priority-color: rgba(223, 9, 9, 0.838);
     --due-date-bg: #2d3945;
 }
 
@@ -105,7 +105,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    /* line-height: 2.1; */
 }
 
 .side-menu .btn:hover, .side-menu li:hover {
