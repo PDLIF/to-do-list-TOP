@@ -227,7 +227,25 @@ export const DOMController = (function () {
         priorityWrapper.classList.add('priority-wrapper');
         const priority = document.createElement('p');
         priority.classList.add('priority');
-        priority.textContent = task.getPriority();
+
+        const priorityValue = task.getPriority();
+        priority.textContent = priorityValue;
+
+        switch (priorityValue) {
+            case 'Low':
+                priorityWrapper.classList.add('low-priority');
+                break;
+            case 'Medium':
+                priorityWrapper.classList.add('medium-priority');
+                break;
+            case 'High':
+                priorityWrapper.classList.add('high-priority');
+                break;
+            case 'Critical':
+                priorityWrapper.classList.add('critical-priority');
+                break;
+        }
+
         priorityWrapper.appendChild(priority);
 
         return priorityWrapper;
@@ -304,8 +322,9 @@ export const DOMController = (function () {
 
 
     
-    function updateTaskUI(oldTaskId, newTaskId, updatedTask) {
+    function updateTaskUI(oldTaskId, newTaskId) {
         const taskDiv = document.querySelector(`[data-title="${oldTaskId}"]`);
+        taskDiv.innerHTML = '';
 
         const task = TaskManager.findTask(newTaskId);
         const taskTitle = task.getTitle();
@@ -315,16 +334,20 @@ export const DOMController = (function () {
             console.error(`Task element with ID ${newTaskId} not found.`);
             return;
         }
-    
-        console.log(taskDiv.querySelector(".description"));
-        // console.log(taskDiv.querySelector(".task-title").textContent);
-        // console.log(updatedTask);
-        
-        taskDiv.querySelector(".task-title").textContent = updatedTask.getTitle();
-        taskDiv.querySelector(".project-title").textContent = `Project: ${updatedTask.getProject().getTitle()}`;
-        taskDiv.querySelector(".description").textContent = updatedTask.getDescription();
-        taskDiv.querySelector(".due-date").textContent = updatedTask.getDueDate();
-        taskDiv.querySelector(".priority").textContent = updatedTask.getPriority();
+
+        const heading = createTaskHeading(task);
+        const description = createTaskDescription(task);
+        const dueDateWrapper = createTaskDueDateMarker(task);
+        const priorityWrapper = createTaskPriorityMarker(task);
+        const importantBtn = createTaskImportantBtn(task);
+        const dropdownMenu = createTaskOptions();
+
+        taskDiv.appendChild(heading);
+        taskDiv.appendChild(description);
+        taskDiv.appendChild(dueDateWrapper);
+        taskDiv.appendChild(priorityWrapper);
+        taskDiv.appendChild(importantBtn);
+        taskDiv.appendChild(dropdownMenu);
     }
 
 
@@ -352,7 +375,7 @@ export const DOMController = (function () {
     
         if (updatedTask) {
             // Update UI
-            updateTaskUI(oldTitle, newTaskTitle, updatedTask);
+            updateTaskUI(oldTitle, newTaskTitle);
         }
     
         // Hide modal
