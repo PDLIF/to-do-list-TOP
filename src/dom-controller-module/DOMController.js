@@ -138,9 +138,12 @@ export const DOMController = (function () {
         taskDiv.appendChild(heading);
         taskDiv.appendChild(description);
         taskDiv.appendChild(dueDateWrapper);
-        taskDiv.appendChild(priorityWrapper);
         taskDiv.appendChild(importantBtn);
         taskDiv.appendChild(dropdownMenu);
+        
+        if (priorityWrapper !== null) {
+            taskDiv.appendChild(priorityWrapper);
+        }
 
         tasksList.appendChild(taskDiv);
     }
@@ -244,6 +247,10 @@ export const DOMController = (function () {
             case 'Critical':
                 priorityWrapper.classList.add('critical-priority');
                 break;
+            case 'None':
+                return null;
+            case '':
+                return null;
         }
 
         priorityWrapper.appendChild(priority);

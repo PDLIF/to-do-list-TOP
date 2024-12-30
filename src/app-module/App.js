@@ -8,7 +8,7 @@ export const App = (function () {
         const allProjects = TaskManager.getAllProjects();
         const defaultProject = Project('Default Project');
         const newProject = Project('New Project');
-        const testTask = Task("Sample Task", "A project with this title already exists. Please choose a different title.A project with this title already exists. Please choose a different title.", "2024-12-20", "High", defaultProject);
+        const testTask = Task("Sample Task", "Hey there! I'm a sample task created specifically for demonstrating that the functionality works as expected.", "2024-12-20", "Low", defaultProject);
 
         TaskManager.addProject(defaultProject);
         TaskManager.addProject(newProject);
