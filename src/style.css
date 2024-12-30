@@ -28,6 +28,12 @@
     --task-delete-btn-bg: #303e4c;
     --task-delete-btn-bg-hover: #3f5163;
     --task-delete-btn-bg-active: #303e4c;
+
+    --low-priority-color: red;
+    --medium-priority-color:green;
+    --high-priority-color:blue;
+    --critical-priority-color:orange;
+    --due-date-bg: #2d3945;
 }
 
 * {
@@ -337,15 +343,30 @@ body {
 }
 
 .task-div .due-date-wrapper {
-    background-color: rgb(172, 194, 236);
+    background-color: var(--due-date-bg);
     right: .5rem;
     bottom: .6rem;
 }
 
 .task-div .priority-wrapper {
-    background-color: rgb(250, 145, 122);
     left: .5rem;
     bottom: .6rem;
+}
+
+.task-div .priority-wrapper.low-priority{
+    background-color: var(--low-priority-color);
+}
+
+.task-div .priority-wrapper.medium-priority{
+    background-color: var(--medium-priority-color);
+}
+
+.task-div .priority-wrapper.high-priority{
+    background-color: var(--high-priority-color);
+}
+
+.task-div .priority-wrapper.critical-priority{
+    background-color: var(--critical-priority-color);
 }
 
 .due-date, .priority {
