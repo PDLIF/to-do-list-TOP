@@ -11,6 +11,8 @@
     --h1: 119px;
     --cta-logo-cize: 150px;
 
+    --border-color: rgb(82, 82, 82);
+
     --main-bg-color: #010409;
     --sidebar-bg-color: #0D1117;
 
@@ -34,6 +36,11 @@
     --high-priority-color:rgb(219, 155, 36);
     --critical-priority-color: rgba(223, 9, 9, 0.838);
     --due-date-bg: #2d3945;
+
+    --form-bg: #0D1117;
+    --form-input-bg: #1c232b;
+    --form-btn-color: #1c232b;
+    --form-btn-color-hover: #232d37;
 }
 
 * {
@@ -138,11 +145,11 @@ body {
 .form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
 
     width: fit-content;
     margin: 0 auto;
-    margin-bottom: 2rem;
+    padding: 20px;
 }
 
 .content {
@@ -221,7 +228,7 @@ body {
     background-color: var(--task-div-color);
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05);
 
-    border: 2px solid rgb(82, 82, 82);
+    border: 2px solid var(--border-color);
 
     position: relative;
 }
@@ -253,7 +260,7 @@ body {
     text-overflow: ellipsis;
 }
 
-.task-div .due-date-wrapper, .task-div .priority-wrapper, .task-div .heading, .task-div .description, .side-menu .projects-heading {
+.task-div .due-date-wrapper, .task-div .priority-wrapper, .task-div .heading, .task-div .description, .side-menu .projects-heading, .form-heading {
     cursor: default;
 }
 
@@ -370,4 +377,80 @@ body {
 
 .due-date, .priority {
     font-weight: 500;
+}
+
+
+
+
+
+
+
+
+dialog {
+    margin: auto;
+    border-radius: 20px;
+    background-color: var(--form-bg);
+
+    color: #ffff;
+    border-color: var(--border-color);
+}
+
+dialog::backdrop {
+    background-color: #010409e2;
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.formField > label {
+    width: 100px;
+}
+
+.form-input {
+    font-family: 'Poppins', sans-serif;
+    width: 300px;
+    padding: 5px 10px;
+    font-size: 13px;
+
+    border-radius: 10px;
+    border: none;
+
+    appearance: none;
+    background-color: var(--form-input-bg);
+    color: #ffff;
+
+    cursor: pointer;
+}
+
+.form-input.description-input {
+    resize: none;
+}
+
+form .form-submit-btn {
+    font-size: var(--p);
+    color: #ffff;
+    
+    width: 300px;
+    padding: 10px;
+
+    border: none;
+    border-radius: 10px;
+    background-color: var(--form-btn-color);
+
+    cursor: pointer;
+}
+
+form .form-submit-btn:hover {
+    background-color: var(--form-btn-color-hover);
+}
+
+form .form-submit-btn:active {
+    background-color: var(--form-btn-color);
+}
+
+option .option-placeholder {
+    color: red; /* Placeholder color */
 }
