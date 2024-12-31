@@ -41,6 +41,8 @@
     --form-input-bg: #1c232b;
     --form-btn-color: #1c232b;
     --form-btn-color-hover: #232d37;
+    --form-exit-btn: #1c232b;
+    --form-exit-btn-hover: #232c37;
 }
 
 * {
@@ -393,6 +395,8 @@ dialog {
 
     color: #ffff;
     border-color: var(--border-color);
+
+    position: relative;
 }
 
 dialog::backdrop {
@@ -431,6 +435,7 @@ dialog::backdrop {
 
 form .form-submit-btn {
     font-size: var(--p);
+    font-weight: 500;
     color: #ffff;
     
     width: 300px;
@@ -463,6 +468,10 @@ select {
     position: relative;
 }
 
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid #063B83;
+}
+
 .select-arrow {
     content: '';
     position: absolute;
@@ -475,4 +484,36 @@ select {
     border-top: 2px solid gray;
     transform: translateY(-60%) rotate(-135deg); /* Creates a downward arrow */
     pointer-events: none; /* Ensures the arrow doesn’t interfere with clicking */
+}
+
+.form-heading {
+    font-size: var(--h5);
+    font-weight: 500;
+    text-align: center;
+    margin: 1rem 0 0;
+}
+
+.form-exit-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    height: 34px;
+    width: fit-content;
+
+    border-radius: 100px;
+
+    background-color: var(--form-exit-btn);
+    cursor: pointer;
+}
+
+.form-exit-btn:hover {
+    background-color: var(--form-exit-btn-hover);
+}
+
+.form-exit-btn:active {
+    background-color: var(--form-exit-btn);
+}
+
+.form-exit-cross {
+    margin: 5px;
 }
