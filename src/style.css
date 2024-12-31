@@ -140,19 +140,10 @@ body {
     background-color: var(--tab-color-active);
 }
 
-.forms {
-    display: flex;
-}
 
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
 
-    width: fit-content;
-    margin: 0 auto;
-    padding: 20px;
-}
+
+
 
 .content {
     display: flex;
@@ -387,20 +378,33 @@ body {
 
 
 
-
 dialog {
     margin: auto;
     border-radius: 20px;
     background-color: var(--form-bg);
-
+    
     color: #ffff;
     border-color: var(--border-color);
-
+    
     position: relative;
 }
 
 dialog::backdrop {
     background-color: #010409e2;
+}
+
+.forms {
+    display: flex;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    width: fit-content;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .formField {

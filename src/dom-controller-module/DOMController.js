@@ -734,6 +734,26 @@ export const DOMController = (function () {
         editTaskForm.reset();
     });
 
+    addTaskFormModal.addEventListener("click", (event) => {
+        // Close the modal if the click is outside the modal content
+        if (!addTaskForm.contains(event.target)) {
+            addTaskFormModal.close();
+        }
+      });
+
+      editTaskFormModal.addEventListener("click", (event) => {
+        // Close the modal if the click is outside the modal content
+        if (!editTaskForm.contains(event.target)) {
+            editTaskFormModal.close();
+        }
+      });
+
+      addProjectFormModal.addEventListener("click", (event) => {
+        // Close the modal if the click is outside the modal content
+        if (!addProjectForm.contains(event.target)) {
+            addProjectFormModal.close();
+        }
+      });
 
     // making a clicked tab active
     homeAndProjectsLists.forEach(list => {
