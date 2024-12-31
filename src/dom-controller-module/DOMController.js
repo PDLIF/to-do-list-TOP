@@ -368,6 +368,9 @@ export const DOMController = (function () {
         const oldTitle = currentTask.getTitle();
         const newTaskTitle = editTaskForm.elements.title.value;
 
+        const oldProject = currentTask.getProject(); //deleting the task from old project
+        oldProject.deleteTask(currentTask);
+        
         const newParentProjectTitle = editTaskForm.elements.project.value;
         const newParentProject = TaskManager.findProject(newParentProjectTitle);
     
@@ -379,6 +382,8 @@ export const DOMController = (function () {
             priority: editTaskForm.elements.options.value,
             project: newParentProject
         });
+
+        newParentProject.addTask(updatedTask);
     
         if (updatedTask) {
             // Update UI

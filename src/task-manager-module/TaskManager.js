@@ -41,6 +41,10 @@ export const TaskManager = (function () {
         projectTasks.forEach(task => allTasks.push(task));
     }
 
+    function addTaskToAll(task) {
+        allTasks.push(task)
+    }
+    
     function addTask(task, project) {
         project.getTasks().push(task);
     }
@@ -96,6 +100,6 @@ export const TaskManager = (function () {
         return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
-    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteProject, deleteTask, deleteImportantTask, findProject, findTask, isImportant }
+    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteProject, deleteTask, deleteImportantTask, findProject, findTask, isImportant, addTaskToAll }
 })();
 

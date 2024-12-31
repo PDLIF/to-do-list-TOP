@@ -26,19 +26,24 @@
                 </div>
                 <div class="formField">
                     <label for="priority">Priority:</label>
-                    <select id="priority" name="options" class="form-input priority">
-                        <option value="" disabled selected hidden>Select a priority</option>
-                        <option value="None">None</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                      </select>
+                    <div class="select-wrapper">
+                        <select id="priority" name="options" class="form-input priority">
+                            <option value="" disabled selected hidden>Select a priority</option>
+                            <option value="None" class="option-placeholder">None</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                        <span class="select-arrow"></span>
+                    </div>
                 </div>
                 <div class="formField">
                     <label for="project">Project:</label>
-                    <select id="project" name="project" class="form-input project-select">
-                    </select>
+                    <div class="select-wrapper">
+                        <select id="project" name="project" class="form-input project-select"></select>
+                        <span class="select-arrow"></span>
+                    </div>
                 </div>
                 <button type="submit" class="form-submit-btn add-task-form-btn">Add Task</button>
             </form>
@@ -60,14 +65,17 @@
                 </div>
                 <div class="formField">
                     <label for="priority">Priority:</label>
-                    <select id="priority" name="options" class="form-input priority">
-                        <option value="" disabled selected hidden>Select a priority</option>
-                        <option value="None" class="option-placeholder">None</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                      </select>
+                    <div class="select-wrapper">
+                        <select id="priority" name="options" class="form-input priority">
+                            <option value="" disabled selected hidden>Select a priority</option>
+                            <option value="None" class="option-placeholder">None</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                        <span class="select-arrow"></span>
+                    </div>
                 </div>
                 <div class="formField">
                     <label for="project">Project:</label>

@@ -454,3 +454,25 @@ form .form-submit-btn:active {
 option .option-placeholder {
     color: red; /* Placeholder color */
 }
+
+.select-wrapper {
+    position: relative;
+}
+
+select {
+    position: relative;
+}
+
+.select-arrow {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Adjust spacing */
+    width: 8px;
+    height: 8px;
+    background-color: transparent;
+    border-left: 2px solid gray;
+    border-top: 2px solid gray;
+    transform: translateY(-60%) rotate(-135deg); /* Creates a downward arrow */
+    pointer-events: none; /* Ensures the arrow doesn’t interfere with clicking */
+}
