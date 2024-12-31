@@ -352,9 +352,12 @@ export const DOMController = (function () {
         taskDiv.appendChild(heading);
         taskDiv.appendChild(description);
         taskDiv.appendChild(dueDateWrapper);
-        taskDiv.appendChild(priorityWrapper);
         taskDiv.appendChild(importantBtn);
         taskDiv.appendChild(dropdownMenu);
+
+        if (priorityWrapper !== null) {
+            taskDiv.appendChild(priorityWrapper);
+        }
     }
 
 
