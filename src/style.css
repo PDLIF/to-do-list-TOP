@@ -495,9 +495,9 @@ input:focus, textarea:focus, select:focus {
 
 .form-exit-btn {
     position: absolute;
-    top: 15px;
-    right: 20px;
-    height: 34px;
+    top: 10px;
+    right: 10px;
+    height: 25px;
     width: fit-content;
 
     border-radius: 100px;
@@ -515,5 +515,6 @@ input:focus, textarea:focus, select:focus {
 }
 
 .form-exit-cross {
+    width: 15px;
     margin: 5px;
 }
