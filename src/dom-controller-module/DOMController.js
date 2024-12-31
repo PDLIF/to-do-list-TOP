@@ -12,10 +12,14 @@ export const DOMController = (function () {
     const addTaskForm = document.querySelector(".add-task-form");
     const addProjectForm = document.querySelector(".add-project-form");
     const editTaskForm = document.querySelector(".edit-task-form");
-
+    
     const addTaskFormModal = document.querySelector(".add-task-form-dialog");
     const addProjectFormModal = document.querySelector(".add-project-form-dialog");
     const editTaskFormModal = document.querySelector(".edit-task-form-dialog");
+
+    const addTaskFormModalExitBtn = document.querySelector('.add-task-form-dialog .form-exit-btn');
+    const editTaskFormModalExitBtn = document.querySelector('.edit-task-form-dialog .form-exit-btn');
+    const addProjectFormModalExitBtn = document.querySelector('.add-project-form-dialog .form-exit-btn');
 
     const allTasksTab = document.querySelector('.all-tasks-tab');
     const todayTasksTab = document.querySelector('.today-tasks-tab');
@@ -674,17 +678,20 @@ export const DOMController = (function () {
     addProjectForm.addEventListener('submit', (event) => {       
         addProjectFormSubmit(event);
         saveToLocalStorage();
+        addProjectForm.reset();
     });
     
     // add task form submition
     addTaskForm.addEventListener('submit', (event) => {
         addTaskFormSubmit(event);
         saveToLocalStorage();
+        addTaskForm.reset();
     });
     
     editTaskForm.addEventListener("submit", (event) => {
         editTaskFormSubmit(event);
         saveToLocalStorage();
+        editTaskForm.reset();
     });
 
     // adding event listeners to tabs and buttons in the sidebar
@@ -712,6 +719,21 @@ export const DOMController = (function () {
         addProjectFormModal.showModal();
     });
 
+    addTaskFormModalExitBtn.addEventListener('click', () => {
+        addTaskFormModal.close();
+        addTaskForm.reset();
+    });
+
+    editTaskFormModalExitBtn.addEventListener('click', () => {
+        editTaskFormModal.close();
+        editTaskForm.reset();
+    });
+
+    addProjectFormModalExitBtn.addEventListener('click', () => {
+        addProjectFormModal.close();
+        editTaskForm.reset();
+    });
+
 
     // making a clicked tab active
     homeAndProjectsLists.forEach(list => {
@@ -730,7 +752,6 @@ export const DOMController = (function () {
         const projectTitleElement = event.target.closest('.project-title');
         const projectTab = event.target.closest('.tab'); // Find the closest project tab
         const projectDeleteBtn = event.target.closest('.project-delete-btn'); // Find the closest project tab
-        console.log(clickedElement)
 
         if (clickedElement === projectTitleElement ||
             clickedElement === projectTab) {
