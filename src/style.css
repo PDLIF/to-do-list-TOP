@@ -97,6 +97,14 @@ body {
     gap: .5rem;
 }
 
+.side-menu .btn {
+    position: relative;
+}
+
+.side-menu .btn a {
+    margin-left: 25px;
+}
+
 .side-menu .btn, .side-menu .tab {
     padding: 12px 6px;
     width: 250px;
@@ -521,4 +529,20 @@ input:focus, textarea:focus, select:focus {
 .form-exit-cross {
     width: 15px;
     margin: 5px;
+}
+
+.add-sign {
+    position: absolute;
+    left: 10px;
+    top: 14px;
+    
+    background-color: var(--task-options-btn);
+    padding: 3px;
+    border-radius: 100px;
+    height: 20px;
+}
+
+.add-sign-img {
+    width: 15px;
+    transform: translateY(-23%) rotate(45deg); /* Creates a downward arrow */
 }

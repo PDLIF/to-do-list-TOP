@@ -29,9 +29,6 @@ export const DOMController = (function () {
     const addTaskBtn = document.querySelector(".add-task-btn");
     const addProjectBtn = document.querySelector(".add-project-btn");
 
-
-    
-
     function rebuildProject(data) {
         const tasks = data.tasks || [];
         const project = Project(data.title);
@@ -79,16 +76,6 @@ export const DOMController = (function () {
         renderAllTasks();
     });
 
-
-
-
-
-
-
-
-
-
-
     // adding a DOM project element to the sidebar
     function addProjectTab(project) {
         const projectBtn = document.createElement('li');
@@ -120,10 +107,6 @@ export const DOMController = (function () {
             saveToLocalStorage();
         });
     }
-
-
-
-
     
     // adding a DOM task element
     function addTaskDiv(task) {
@@ -152,9 +135,6 @@ export const DOMController = (function () {
         tasksList.appendChild(taskDiv);
     }
 
-
-
-
     function createTaskHeading(task) {
         const heading = document.createElement('div');
         heading.classList.add('heading');
@@ -178,8 +158,6 @@ export const DOMController = (function () {
         return heading;
     }
 
-
-
     function createTaskDescription(task) {
         const description = document.createElement('p');
         description.classList.add('description');
@@ -188,8 +166,6 @@ export const DOMController = (function () {
         return description;
     }
     
-    
-
     function createTaskDueDateMarker(task) {
         const dueDateWrapper = document.createElement('div');
         dueDateWrapper.classList.add('due-date-wrapper');
@@ -200,7 +176,6 @@ export const DOMController = (function () {
 
         return dueDateWrapper;
     }
-
 
     function createTaskImportantBtn(task) {
         const importantBtn = document.createElement('div');
@@ -262,7 +237,6 @@ export const DOMController = (function () {
         return priorityWrapper;
     }
 
-
     function createTaskOptions() {
         const optionsWrapper = document.createElement('div');
         optionsWrapper.classList.add('task-options-wrapper');
@@ -309,12 +283,6 @@ export const DOMController = (function () {
         return optionsWrapper;
     }
     
-
-
-
-
-
-
     function updateTaskData(task, updates) {
         if (!task) {
             console.error(`Task with name ${task.getTitle()} not found.`);
@@ -330,9 +298,6 @@ export const DOMController = (function () {
         return task;
     }
 
-
-
-    
     function updateTaskUI(oldTaskId, newTaskId) {
         const taskDiv = document.querySelector(`[data-title="${oldTaskId}"]`);
         taskDiv.innerHTML = '';
@@ -363,10 +328,6 @@ export const DOMController = (function () {
             taskDiv.appendChild(priorityWrapper);
         }
     }
-
-
-
-
 
     function editTaskFormSubmit(event) {
         event.preventDefault();
@@ -401,10 +362,6 @@ export const DOMController = (function () {
         editTaskFormModal.close();
         saveToLocalStorage();
     }
-    
-
-    
-
 
     function handleDeleteTask(event) {
         const currentTaskDiv = event.currentTarget.closest('.task-div');
@@ -419,9 +376,6 @@ export const DOMController = (function () {
         
         saveToLocalStorage();
     }
-
-
-
 
     function openEditForm(event) {
         editTaskFormModal.showModal();
@@ -447,15 +401,6 @@ export const DOMController = (function () {
         editTaskForm.currentTask = task;
     }
     
-    
-
-
-
-
-
-
-
-
     function addProjectFormSubmit(event) {
         event.preventDefault();
         
@@ -475,12 +420,6 @@ export const DOMController = (function () {
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
     }
     
-    
-    
-
-
-
-
     function addTaskFormSubmit(event) {
         event.preventDefault();
         
@@ -604,10 +543,6 @@ export const DOMController = (function () {
         });
     }
 
-
-
-
-
     function setTaskImportantBtn(task, btn) {
         const isImportant = task.getIsImportant();
 
@@ -619,14 +554,6 @@ export const DOMController = (function () {
             btn.classList.remove('active');
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
     
     // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
     function renderTasks(tasks) {
@@ -669,11 +596,6 @@ export const DOMController = (function () {
         tab.classList.add('active');
     }
     
-    
-
-
-
-
     // add project form submition
     addProjectForm.addEventListener('submit', (event) => {       
         addProjectFormSubmit(event);
@@ -765,8 +687,6 @@ export const DOMController = (function () {
         });
     });
 
-
-
     projectsList.addEventListener('click', (event) => {
         const clickedElement = event.target;
         const projectTitleElement = event.target.closest('.project-title');
@@ -780,7 +700,6 @@ export const DOMController = (function () {
             DOMController.renderTasks(project.getTasks());
         }
     });
-
 
     return { addProjectTab, addTaskDiv, renderProjects, renderAllTasks, renderTasks, updateProjectDropdown, deactivateTabs, makeTabActive }
 })();
