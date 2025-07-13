@@ -32,3 +32,16 @@ test('deleteProject removes project and its tasks', () => {
     expect(TaskManager.getAllProjects()).not.toContain(mockProject);
     expect(TaskManager.getAllTasks()).not.toContain(mockTask);
 })
+
+test('addImportantTasks marks task as important', () => {
+    const mockTask = {
+        getTitle: () => 'Important Task',
+        setIsImportant: jest.fn()
+    }
+
+    TaskManager.clearImportantTasks();
+    TaskManager.addImportantTask(mockTask);
+
+    expect(TaskManager.getImportantTasks()).toContain(mockTask);
+    expect(mockTask.setIsImportant).toHaveBeenCalledWith(true);
+})
