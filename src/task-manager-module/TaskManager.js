@@ -69,7 +69,13 @@ export const TaskManager = (function () {
         const index = tasks.findIndex((t) => t.getTitle() === task.getTitle());
         
         if (index !== -1) {
-            project.getTasks().splice(index, 1);
+            tasks.splice(index, 1);
+
+            // Also remove from allTasks
+            const allTaskIndex = allTasks.findIndex(t => t.getTitle() === task.getTitle());
+            if (allTaskIndex !== -1) {
+                allTasks.splice(allTaskIndex, 1);
+            }
         } else {
             console.log('error');
         }

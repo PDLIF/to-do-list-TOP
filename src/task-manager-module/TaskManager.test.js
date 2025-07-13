@@ -15,3 +15,20 @@ test('addProject adds a project and its tasks to TaskManager', () => {
     expect(TaskManager.getAllProjects()).toContain(mockProject);
     expect(TaskManager.getAllTasks()).toContain(mockTask);
 });
+
+test('deleteProject removes project and its tasks', () => {
+    const mockTask = { getTitle: () => 'Task A' };
+    const mockProject = {
+        getTitle: () => 'Project A',
+        getTasks: () => [mockTask]
+    };
+
+    TaskManager.clearAllProjects();
+    TaskManager.clearAllTasks();
+    TaskManager.addProject(mockProject);
+
+    TaskManager.deleteProject('Project A');
+
+    expect(TaskManager.getAllProjects()).not.toContain(mockProject);
+    expect(TaskManager.getAllTasks()).not.toContain(mockTask);
+})

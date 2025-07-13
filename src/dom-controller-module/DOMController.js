@@ -1,6 +1,6 @@
-import { TaskManager } from "../task-manager-module/TaskManager";
-import { Project } from "../project-module/Project";
-import { Task } from "../task-module/Task";
+import { TaskManager } from "../task-manager-module/TaskManager.js";
+import { Project } from "../project-module/Project.js";
+import { Task } from "../task-module/Task.js";
 
 import projectDeleteIconPath from "../assets/delete-project-btn/delete-project-icon.svg";
 

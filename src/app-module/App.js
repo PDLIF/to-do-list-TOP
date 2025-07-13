@@ -1,7 +1,7 @@
-import { Task } from '../task-module/Task'
-import { Project } from '../project-module/Project'
-import { TaskManager } from '../task-manager-module/TaskManager'
-import { DOMController } from '../dom-controller-module/DOMController'
+import { Task } from '../task-module/Task.js'
+import { Project } from '../project-module/Project.js'
+import { TaskManager } from '../task-manager-module/TaskManager.js'
+import { DOMController } from '../dom-controller-module/DOMController.js'
 
 export const App = (function () {
     function initialize() {
