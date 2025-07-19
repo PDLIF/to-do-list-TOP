@@ -85,11 +85,15 @@ export const TaskManager = (function () {
         const index = importantTasks.findIndex((t) => t.getTitle() === task.getTitle());
 
         importantTasks.splice(index, 1);
-        task.setIsImportant(true);
+        task.setIsImportant(false);
     }
 
     function findProject(projectTitle) {
-        return allProjects.find(project => project.getTitle() === projectTitle);
+        const wantedProject = allProjects.find(project => project.getTitle() === projectTitle);
+        if (wantedProject) {
+            return wantedProject;
+        }
+        return 'project not found';
     }
 
     function findTask(taskName) {
