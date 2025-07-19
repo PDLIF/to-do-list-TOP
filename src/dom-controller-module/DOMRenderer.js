@@ -1,6 +1,12 @@
 import projectDeleteIconPath from "../assets/delete-project-btn/delete-project-icon.svg";
 
 import { DOMController } from './DOMController.js';
+import { TaskManager } from "../task-manager-module/TaskManager.js";
+
+const projectsList = document.querySelector(".projects-list");
+const tasksList = document.querySelector(".tasks-list");
+const allTasksTab = document.querySelector(".all-tasks-tab");
+
 
 // DOMRenderer.js
 function addProjectTab(project) {
@@ -166,6 +172,97 @@ function createTaskOptions({ openEditForm, handleDeleteTask }) {
     return optionsWrapper;
 }
 
+  // render projects in the sidebar
+function renderProjects(projects) {
+    projectsList.innerHTML = "";
+    projects.forEach((project) => {
+      const { tabElement, deleteBtn } = addProjectTab(project);
+      DOMController.onProjectDelete(deleteBtn, tabElement); // Attach listener
+      projectsList.appendChild(tabElement);   // Add to DOM
+    });
+}
+
+function renderAllTasks(openEditForm, handleDeleteTask) {
+    tasksList.innerHTML = "";
+
+    const projects = TaskManager.getAllProjects();
+    projects.forEach((project) => {
+      const tasks = project.getTasks();
+      tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
+    });
+
+    DOMController.makeTabActive(allTasksTab);
+}
+
+function renderImportantTasks(openEditForm, handleDeleteTask) {
+    tasksList.innerHTML = "";
+
+    const importantTasks = TaskManager.getAllTasks().filter(
+      (task) => task.getIsImportant() === true,
+    );
+    importantTasks.forEach((task) => {
+      addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask })
+    });
+  }
+
+// render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
+function renderTasks(tasks, openEditForm, handleDeleteTask) {
+    tasksList.innerHTML = "";
+    tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
+}
+
+function renderTodayTasks( openEditForm, handleDeleteTask ) {
+    tasksList.innerHTML = "";
+    const projects = TaskManager.getAllProjects();
+
+    function isTodayTask(task) {
+        const todayDate = new Date();
+        const taskDate = new Date(task.getDueDate());
+    
+        return (
+          todayDate.getFullYear() === taskDate.getFullYear() &&
+          todayDate.getMonth() === taskDate.getMonth() &&
+          todayDate.getDate() === taskDate.getDate()
+        );
+    }
+
+    projects.forEach((project) => {
+      const projectTasks = project.getTasks();
+      projectTasks.forEach((task) => {
+        const isToday = isTodayTask(task);
+        if (isToday) {
+          addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask });
+        }
+      });
+    });
+}
+
+// render add and edit forms' dropdowns for project selection
+function updateProjectDropdown(projects) {
+    const addFormProjectSelect = document.querySelector(
+      ".add-task-form .project-select",
+    );
+    const editFormProjectSelect = document.querySelector(
+      ".edit-task-form .project-select",
+    );
+
+    addFormProjectSelect.innerHTML = ""; // Clear existing options
+    editFormProjectSelect.innerHTML = ""; // Clear existing options
+
+    projects.forEach((project) => {
+      const addOption = document.createElement("option");
+      addOption.value = project.getTitle(); // Assuming getTitle() returns a unique value
+      addOption.textContent = project.getTitle();
+      addFormProjectSelect.appendChild(addOption);
+
+      // Create a separate option for edit-task-form
+      const editOption = document.createElement("option");
+      editOption.value = project.getTitle(); // Assuming getTitle() returns a unique value
+      editOption.textContent = project.getTitle();
+      editFormProjectSelect.appendChild(editOption);
+    });
+  }
+
 function addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }) {
     const div = document.createElement("div");
     div.classList.add("task-div");
@@ -188,14 +285,20 @@ function addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }) {
     if (priority !== null) div.appendChild(priority);
   
     tasksList.appendChild(div);
-  }
+}
 
-  export { addProjectTab,
-           createTaskHeading,
-           createTaskDescription,
-           createTaskDueDateMarker,
-           createTaskPriorityMarker,
-           createTaskImportantBtn,
-           createTaskOptions,
-           addTaskDiv
-        }
+export { addProjectTab,
+        createTaskHeading,
+        createTaskDescription,
+        createTaskDueDateMarker,
+        createTaskPriorityMarker,
+        createTaskImportantBtn,
+        createTaskOptions,
+        addTaskDiv,
+        renderProjects,
+        renderTasks,
+        renderAllTasks,
+        renderImportantTasks,
+        renderTodayTasks,
+        updateProjectDropdown,
+}

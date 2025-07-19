@@ -11,6 +11,12 @@ import {
   createTaskImportantBtn,
   createTaskOptions,
   addTaskDiv,
+  renderProjects,
+  renderTasks,
+  renderAllTasks,
+  renderImportantTasks,
+  renderTodayTasks,
+  updateProjectDropdown,
 } from './DOMRenderer.js'
 
 export const DOMController = (function () {
@@ -96,7 +102,7 @@ export const DOMController = (function () {
   
     DOMController.renderProjects(TaskManager.getAllProjects());
     DOMController.updateProjectDropdown(TaskManager.getAllProjects());
-    renderAllTasks();
+    renderAllTasks(openEditForm, handleDeleteTask);
   });
 
   window.TaskManager = TaskManager;
@@ -117,12 +123,12 @@ export const DOMController = (function () {
 
     if (isImportant === false) {
       // Task is not in favourites, add it
-      TaskManager.addImportantTask(task);
       task.setIsImportant(true);
+      TaskManager.addImportantTask(task);
     } else {
       // Task is already in favourites, remove it
-      TaskManager.deleteImportantTask(task);
       task.setIsImportant(false);
+      TaskManager.deleteImportantTask(task);
     }
 
     saveToLocalStorage();
@@ -313,48 +319,14 @@ export const DOMController = (function () {
 
     if (projectTab && projectTab.classList.contains("active")) {
       const tasks = selectedProject.getTasks();
-      DOMController.renderTasks(tasks);
+      DOMController.renderTasks(tasks, openEditForm, handleDeleteTask);
     } else {
-      DOMController.renderAllTasks(selectedProject);
+      DOMController.renderTasks(selectedProject.getTasks(), openEditForm, handleDeleteTask);
       const allTasksTab = document.querySelector(".all-tasks-tab");
       DOMController.makeTabActive(allTasksTab);
     }
 
     addTaskFormModal.close();
-  }
-
-  // render projects in the sidebar
-  function renderProjects(projects) {
-    projectsList.innerHTML = "";
-    projects.forEach((project) => {
-      const { tabElement, deleteBtn } = addProjectTab(project);
-      onProjectDelete(deleteBtn, tabElement); // Attach listener
-      projectsList.appendChild(tabElement);   // Add to DOM
-    });
-  }
-
-  // display all tasks
-  function renderAllTasks() {
-    tasksList.innerHTML = "";
-
-    const projects = TaskManager.getAllProjects();
-    projects.forEach((project) => {
-      const tasks = project.getTasks();
-      tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
-    });
-
-    DOMController.makeTabActive(allTasksTab);
-  }
-
-  function isTodayTask(task) {
-    const todayDate = new Date();
-    const taskDate = new Date(task.getDueDate());
-
-    return (
-      todayDate.getFullYear() === taskDate.getFullYear() &&
-      todayDate.getMonth() === taskDate.getMonth() &&
-      todayDate.getDate() === taskDate.getDate()
-    );
   }
 
   function isThisWeekTask(task) {
@@ -368,21 +340,6 @@ export const DOMController = (function () {
     endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
 
     return taskDate >= startOfWeek && taskDate <= endOfWeek;
-  }
-
-  function renderTodayTasks() {
-    tasksList.innerHTML = "";
-    const projects = TaskManager.getAllProjects();
-
-    projects.forEach((project) => {
-      const projectTasks = project.getTasks();
-      projectTasks.forEach((task) => {
-        const isToday = isTodayTask(task);
-        if (isToday) {
-          addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask });
-        }
-      });
-    });
   }
 
   function renderThisWeekTasks() {
@@ -400,59 +357,16 @@ export const DOMController = (function () {
     });
   }
 
-  function renderImportantTasks() {
-    tasksList.innerHTML = "";
+  function setTaskImportantBtn(task, btn) {
+    const isImportant = task.getIsImportant();
 
-    const importantTasks = TaskManager.getAllTasks().filter(
-      (task) => task.getIsImportant() === true,
-    );
-    importantTasks.forEach((task) => {
-      addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask })
-    });
-  }
-
-  // function setTaskImportantBtn(task, btn) {
-  //   const isImportant = task.getIsImportant();
-
-  //   if (isImportant === true) {
-  //     task.setIsImportant(true);
-  //     btn.classList.add("active");
-  //   } else {
-  //     task.setIsImportant(false);
-  //     btn.classList.remove("active");
-  //   }
-  // }
-
-  // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
-  function renderTasks(tasks) {
-    tasksList.innerHTML = "";
-    tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
-  }
-
-  // render add and edit forms' dropdowns for project selection
-  function updateProjectDropdown(projects) {
-    const addFormProjectSelect = document.querySelector(
-      ".add-task-form .project-select",
-    );
-    const editFormProjectSelect = document.querySelector(
-      ".edit-task-form .project-select",
-    );
-
-    addFormProjectSelect.innerHTML = ""; // Clear existing options
-    editFormProjectSelect.innerHTML = ""; // Clear existing options
-
-    projects.forEach((project) => {
-      const addOption = document.createElement("option");
-      addOption.value = project.getTitle(); // Assuming getTitle() returns a unique value
-      addOption.textContent = project.getTitle();
-      addFormProjectSelect.appendChild(addOption);
-
-      // Create a separate option for edit-task-form
-      const editOption = document.createElement("option");
-      editOption.value = project.getTitle(); // Assuming getTitle() returns a unique value
-      editOption.textContent = project.getTitle();
-      editFormProjectSelect.appendChild(editOption);
-    });
+    if (isImportant === true) {
+      task.setIsImportant(true);
+      btn.classList.add("active");
+    } else {
+      task.setIsImportant(false);
+      btn.classList.remove("active");
+    }
   }
 
   // make all tabs in sidebar inactive
@@ -490,11 +404,11 @@ export const DOMController = (function () {
 
   // adding event listeners to tabs and buttons in the sidebar
   allTasksTab.addEventListener("click", () => {
-    renderAllTasks();
+    renderAllTasks(openEditForm, handleDeleteTask);
   });
 
   todayTasksTab.addEventListener("click", () => {
-    renderTodayTasks();
+    renderTodayTasks(openEditForm, handleDeleteTask);
   });
 
   thisWeekTasksTab.addEventListener("click", () => {
@@ -502,7 +416,7 @@ export const DOMController = (function () {
   });
 
   importantTasksTab.addEventListener("click", () => {
-    renderImportantTasks();
+    renderImportantTasks(openEditForm, handleDeleteTask);
   });
 
   addTaskBtn.addEventListener("click", () => {
@@ -570,7 +484,7 @@ export const DOMController = (function () {
     ) {
       const projectTitle = projectTab.getAttribute("data-title");
       const project = TaskManager.findProject(projectTitle);
-      DOMController.renderTasks(project.getTasks());
+      DOMController.renderTasks(project.getTasks(), openEditForm, handleDeleteTask);
     }
   });
 
@@ -584,5 +498,6 @@ export const DOMController = (function () {
     deactivateTabs,
     makeTabActive,
     onToggleImportantBtn,
+    onProjectDelete,
   };
 })();
