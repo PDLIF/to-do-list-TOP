@@ -5,16 +5,16 @@ export const Project = function (title) {
         return title;
     }
 
+    function setTitle(newTitle) {
+        title = newTitle;
+    }
+
     function getTasks() {
         return tasks;
     }
 
     function addTask(task) {
         tasks.push(task);
-    }
-
-    function setTitle(newTitle) {
-        title = newTitle;
     }
 
     function findTask(title) {
