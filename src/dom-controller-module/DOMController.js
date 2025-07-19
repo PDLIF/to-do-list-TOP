@@ -2,7 +2,16 @@ import { TaskManager } from "../task-manager-module/TaskManager.js";
 import { Project } from "../project-module/Project.js";
 import { Task } from "../task-module/Task.js";
 
-import projectDeleteIconPath from "../assets/delete-project-btn/delete-project-icon.svg";
+import {
+  addProjectTab,
+  createTaskHeading,
+  createTaskDescription,
+  createTaskDueDateMarker,
+  createTaskPriorityMarker,
+  createTaskImportantBtn,
+  createTaskOptions,
+  addTaskDiv,
+} from './DOMRenderer.js'
 
 export const DOMController = (function () {
   const projectsList = document.querySelector(".projects-list");
@@ -79,227 +88,44 @@ export const DOMController = (function () {
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const projects = loadFromLocalStorage();
-    renderProjects(projects);
-
-    TaskManager.clearAllProjects();
+    TaskManager.clearAllProjects(); // Очищаем сначала
     TaskManager.clearAllTasks();
-
+  
+    const projects = loadFromLocalStorage(); // Потом загружаем
     projects.forEach((project) => TaskManager.addProject(project));
-
+  
     DOMController.renderProjects(TaskManager.getAllProjects());
     DOMController.updateProjectDropdown(TaskManager.getAllProjects());
     renderAllTasks();
   });
 
-  // adding a DOM project element to the sidebar
-  function addProjectTab(project) {
-    const projectBtn = document.createElement("li");
-    projectBtn.classList.add("tab", "projects-list-tab");
-    projectBtn.setAttribute("data-title", project.getTitle());
+  window.TaskManager = TaskManager;
 
-    const title = document.createElement("p");
-    title.classList.add("project-title");
-    title.textContent = project.getTitle();
+  function onProjectDelete(projectDeleteBtn) {
+      projectDeleteBtn.addEventListener("click", (event) => {
+        const projectTab = event.currentTarget.closest(".tab");
+        const projectTitle = projectTab.dataset.title;
+        TaskManager.deleteProject(projectTitle);
+        projectTab.remove();
 
-    const projectDeleteBtn = document.createElement("div");
-    projectDeleteBtn.classList.add("project-delete-btn");
-
-    const projectDeleteIcon = document.createElement("img");
-    projectDeleteIcon.classList.add("project-delete-icon");
-    projectDeleteIcon.src = projectDeleteIconPath;
-
-    projectDeleteBtn.appendChild(projectDeleteIcon);
-    projectBtn.appendChild(title);
-    projectBtn.appendChild(projectDeleteBtn);
-    projectsList.appendChild(projectBtn);
-
-    projectDeleteBtn.addEventListener("click", (event) => {
-      const projectTab = event.currentTarget.closest(".tab");
-      const projectTitle = projectTab.dataset.title;
-      TaskManager.deleteProject(projectTitle);
-      projectTab.remove();
-
-      saveToLocalStorage();
+        saveToLocalStorage();
     });
   }
 
-  // adding a DOM task element
-  function addTaskDiv(task) {
-    const taskDiv = document.createElement("div");
-    taskDiv.classList.add("task-div");
-    taskDiv.setAttribute("data-title", task.getTitle());
-    taskDiv.setAttribute("data-project", task.getProject().getTitle());
+  function onToggleImportantBtn(task) {
+    const isImportant = task.getIsImportant();
 
-    const heading = createTaskHeading(task);
-    const description = createTaskDescription(task);
-    const dueDateWrapper = createTaskDueDateMarker(task);
-    const priorityWrapper = createTaskPriorityMarker(task);
-    const importantBtn = createTaskImportantBtn(task);
-    const dropdownMenu = createTaskOptions();
-
-    taskDiv.appendChild(heading);
-    taskDiv.appendChild(description);
-    taskDiv.appendChild(dueDateWrapper);
-    taskDiv.appendChild(importantBtn);
-    taskDiv.appendChild(dropdownMenu);
-
-    if (priorityWrapper !== null) {
-      taskDiv.appendChild(priorityWrapper);
+    if (isImportant === false) {
+      // Task is not in favourites, add it
+      TaskManager.addImportantTask(task);
+      task.setIsImportant(true);
+    } else {
+      // Task is already in favourites, remove it
+      TaskManager.deleteImportantTask(task);
+      task.setIsImportant(false);
     }
 
-    tasksList.appendChild(taskDiv);
-  }
-
-  function createTaskHeading(task) {
-    const heading = document.createElement("div");
-    heading.classList.add("heading");
-
-    const title = document.createElement("h3");
-    title.classList.add("task-title");
-    title.textContent = task.getTitle();
-
-    const parentProject = document.createElement("p");
-    parentProject.classList.add("project-title");
-    const parentProjectTitle = task.getProject().getTitle();
-    parentProject.textContent = `Project: ${parentProjectTitle}`;
-
-    const description = document.createElement("p");
-    description.classList.add("description");
-    description.textContent = task.getDescription();
-
-    heading.appendChild(title);
-    heading.appendChild(parentProject);
-
-    return heading;
-  }
-
-  function createTaskDescription(task) {
-    const description = document.createElement("p");
-    description.classList.add("description");
-    description.textContent = task.getDescription();
-
-    return description;
-  }
-
-  function createTaskDueDateMarker(task) {
-    const dueDateWrapper = document.createElement("div");
-    dueDateWrapper.classList.add("due-date-wrapper");
-    const dueDate = document.createElement("p");
-    dueDate.classList.add("due-date");
-    dueDate.textContent = task.getDueDate();
-    dueDateWrapper.appendChild(dueDate);
-
-    return dueDateWrapper;
-  }
-
-  function createTaskImportantBtn(task) {
-    const importantBtn = document.createElement("div");
-    importantBtn.classList.add("important-btn");
-
-    setTaskImportantBtn(task, importantBtn);
-
-    importantBtn.addEventListener("click", () => {
-      // const taskIndex = TaskManager.isImportant(task);
-      const isImportant = task.getIsImportant();
-
-      if (isImportant === false) {
-        // Task is not in favourites, add it
-        TaskManager.addImportantTask(task);
-        task.setIsImportant(true);
-      } else {
-        // Task is already in favourites, remove it
-        TaskManager.deleteImportantTask(task);
-        task.setIsImportant(false);
-      }
-
-      importantBtn.classList.toggle("active");
-      saveToLocalStorage();
-    });
-
-    return importantBtn;
-  }
-
-  function createTaskPriorityMarker(task) {
-    const priorityWrapper = document.createElement("div");
-    priorityWrapper.classList.add("priority-wrapper");
-    const priority = document.createElement("p");
-    priority.classList.add("priority");
-
-    const priorityValue = task.getPriority();
-    priority.textContent = priorityValue;
-
-    switch (priorityValue) {
-      case "Low":
-        priorityWrapper.classList.add("low-priority");
-        break;
-      case "Medium":
-        priorityWrapper.classList.add("medium-priority");
-        break;
-      case "High":
-        priorityWrapper.classList.add("high-priority");
-        break;
-      case "Critical":
-        priorityWrapper.classList.add("critical-priority");
-        break;
-      case "None":
-        return null;
-      case "":
-        return null;
-    }
-
-    priorityWrapper.appendChild(priority);
-
-    return priorityWrapper;
-  }
-
-  function createTaskOptions() {
-    const optionsWrapper = document.createElement("div");
-    optionsWrapper.classList.add("task-options-wrapper");
-
-    const optionsBtn = document.createElement("div");
-    optionsBtn.classList.add("task-options-btn");
-    optionsBtn.textContent = "⋮";
-
-    const dropdownContainer = document.createElement("div");
-    dropdownContainer.classList.add("task-options-container");
-
-    const options = [
-      {
-        label: "Edit",
-        onClick: (event) => openEditForm(event),
-      },
-      {
-        label: "Delete",
-        onClick: (event) => handleDeleteTask(event),
-      },
-    ];
-
-    options.forEach((option) => {
-      const optionElement = document.createElement("div");
-      optionElement.classList.add("dropdown-option");
-      optionElement.textContent = option.label;
-      optionElement.addEventListener("click", option.onClick);
-      dropdownContainer.append(optionElement);
-    });
-
-    optionsBtn.addEventListener("click", () => {
-      dropdownContainer.classList.toggle("show");
-    });
-
-    document.addEventListener("click", (event) => {
-      if (
-        !dropdownContainer.contains(event.target) &&
-        !optionsBtn.contains(event.target)
-      ) {
-        dropdownContainer.classList.remove("show");
-      }
-    });
-
-    optionsWrapper.appendChild(optionsBtn);
-    optionsWrapper.appendChild(dropdownContainer);
-
-    return optionsWrapper;
+    saveToLocalStorage();
   }
 
   function updateTaskData(task, updates) {
@@ -334,8 +160,8 @@ export const DOMController = (function () {
     const description = createTaskDescription(task);
     const dueDateWrapper = createTaskDueDateMarker(task);
     const priorityWrapper = createTaskPriorityMarker(task);
-    const importantBtn = createTaskImportantBtn(task);
-    const dropdownMenu = createTaskOptions();
+    const importantBtn = createTaskImportantBtn(task, onToggleImportantBtn);
+    const dropdownMenu = createTaskOptions({ openEditForm, handleDeleteTask });
 
     taskDiv.appendChild(heading);
     taskDiv.appendChild(description);
@@ -489,7 +315,6 @@ export const DOMController = (function () {
       const tasks = selectedProject.getTasks();
       DOMController.renderTasks(tasks);
     } else {
-      Task(title, description, dueDate, priority, selectedProject);
       DOMController.renderAllTasks(selectedProject);
       const allTasksTab = document.querySelector(".all-tasks-tab");
       DOMController.makeTabActive(allTasksTab);
@@ -501,7 +326,11 @@ export const DOMController = (function () {
   // render projects in the sidebar
   function renderProjects(projects) {
     projectsList.innerHTML = "";
-    projects.forEach(addProjectTab);
+    projects.forEach((project) => {
+      const { tabElement, deleteBtn } = addProjectTab(project);
+      onProjectDelete(deleteBtn, tabElement); // Attach listener
+      projectsList.appendChild(tabElement);   // Add to DOM
+    });
   }
 
   // display all tasks
@@ -511,7 +340,7 @@ export const DOMController = (function () {
     const projects = TaskManager.getAllProjects();
     projects.forEach((project) => {
       const tasks = project.getTasks();
-      tasks.forEach(addTaskDiv);
+      tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
     });
 
     DOMController.makeTabActive(allTasksTab);
@@ -550,7 +379,7 @@ export const DOMController = (function () {
       projectTasks.forEach((task) => {
         const isToday = isTodayTask(task);
         if (isToday) {
-          addTaskDiv(task);
+          addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask });
         }
       });
     });
@@ -565,7 +394,7 @@ export const DOMController = (function () {
       projectTasks.forEach((task) => {
         const isThisWeek = isThisWeekTask(task);
         if (isThisWeek) {
-          addTaskDiv(task);
+          addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask });
         }
       });
     });
@@ -578,26 +407,26 @@ export const DOMController = (function () {
       (task) => task.getIsImportant() === true,
     );
     importantTasks.forEach((task) => {
-      addTaskDiv(task);
+      addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask })
     });
   }
 
-  function setTaskImportantBtn(task, btn) {
-    const isImportant = task.getIsImportant();
+  // function setTaskImportantBtn(task, btn) {
+  //   const isImportant = task.getIsImportant();
 
-    if (isImportant === true) {
-      task.setIsImportant(true);
-      btn.classList.add("active");
-    } else {
-      task.setIsImportant(false);
-      btn.classList.remove("active");
-    }
-  }
+  //   if (isImportant === true) {
+  //     task.setIsImportant(true);
+  //     btn.classList.add("active");
+  //   } else {
+  //     task.setIsImportant(false);
+  //     btn.classList.remove("active");
+  //   }
+  // }
 
   // render specific group of tasks (e.g. today tasks or tasks which belong to a specific project)
   function renderTasks(tasks) {
     tasksList.innerHTML = "";
-    tasks.forEach(addTaskDiv);
+    tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
   }
 
   // render add and edit forms' dropdowns for project selection
@@ -754,5 +583,6 @@ export const DOMController = (function () {
     updateProjectDropdown,
     deactivateTabs,
     makeTabActive,
+    onToggleImportantBtn,
   };
 })();

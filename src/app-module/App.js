@@ -14,7 +14,7 @@ export const App = (function () {
         TaskManager.addProject(newProject);
         TaskManager.addTask(testTask, defaultProject);
 
-        DOMController.renderTasks(defaultProject.getTasks());
+        DOMController.renderTasks(TaskManager.getAllTasks());
         DOMController.renderProjects(allProjects);
         DOMController.updateProjectDropdown(TaskManager.getAllProjects());
     }
