@@ -14,7 +14,7 @@ export const Project = function (title) {
     }
 
     function setTitle(newTitle) {
-        title = newTitle();
+        title = newTitle;
     }
 
     function findTask(title) {
