@@ -1,7 +1,7 @@
-import { Task } from '../task-module/Task.js'
-import { Project } from '../project-module/Project.js'
-import { TaskManager } from '../task-manager-module/TaskManager.js'
-import { DOMController } from '../dom-controller-module/DOMController.js'
+import { Task } from '../task-module/Task.js';
+import { Project } from '../project-module/Project.js';
+import { TaskManager } from '../task-manager-module/TaskManager.js';
+import { DOMRenderer } from '../dom-controller-module/DOMRenderer.js';
 
 export const App = (function () {
     function initialize() {
@@ -14,9 +14,9 @@ export const App = (function () {
         TaskManager.addProject(newProject);
         TaskManager.addTask(testTask, defaultProject);
 
-        DOMController.renderTasks(TaskManager.getAllTasks());
-        DOMController.renderProjects(allProjects);
-        DOMController.updateProjectDropdown(TaskManager.getAllProjects());
+        DOMRenderer.renderTasks(TaskManager.getAllTasks());
+        DOMRenderer.renderProjects(allProjects);
+        DOMRenderer.updateProjectDropdown(TaskManager.getAllProjects());
     }
     
     return { initialize }

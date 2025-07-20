@@ -1,27 +1,15 @@
 import { TaskManager } from "../task-manager-module/TaskManager.js";
+// import { TaskController } from "../dom-controller-module/TaskController.js";
+import { DOMRenderer } from "./DOMRenderer.js"
+import { StorageManager } from "./StorageManager.js"
 import { Project } from "../project-module/Project.js";
 import { Task } from "../task-module/Task.js";
 
-import {
-  addProjectTab,
-  createTaskHeading,
-  createTaskDescription,
-  createTaskDueDateMarker,
-  createTaskPriorityMarker,
-  createTaskImportantBtn,
-  createTaskOptions,
-  addTaskDiv,
-  renderProjects,
-  renderTasks,
-  renderAllTasks,
-  renderImportantTasks,
-  renderTodayTasks,
-  updateProjectDropdown,
-} from './DOMRenderer.js'
+// Import rendering logic
 
 export const DOMController = (function () {
   const projectsList = document.querySelector(".projects-list");
-  const tasksList = document.querySelector(".tasks-list");
+  // const tasksList = document.querySelector(".tasks-list");
   const homeAndProjectsLists = document.querySelectorAll(
     ".home-list, .projects-list",
   );
@@ -54,55 +42,16 @@ export const DOMController = (function () {
   const addTaskBtn = document.querySelector(".add-task-btn");
   const addProjectBtn = document.querySelector(".add-project-btn");
 
-  function rebuildProject(data) {
-    const project = Project(data.title);
-
-    data.tasks.forEach((taskData) => {
-      const task = rebuildTask(taskData, project);
-      project.addTask(task);
-    });
-
-    return project;
-  }
-
-  function rebuildTask(data, parentProject) {
-    const rebuildParentProject = parentProject;
-    return Task(
-      data.title,
-      data.description,
-      data.dueDate,
-      data.priority,
-      rebuildParentProject,
-      data.isImportant,
-    );
-  }
-
-  function saveToLocalStorage() {
-    const projects = TaskManager.getAllProjects(); // Assuming TaskManager holds your projects and tasks.
-    const serializedData = projects.map((project) =>
-      project.serializeProject(),
-    );
-    localStorage.setItem("todoAppData", JSON.stringify(serializedData)); // Save to localStorage.
-  }
-
-  function loadFromLocalStorage() {
-    const data = localStorage.getItem("todoAppData");
-    if (!data) return [];
-
-    const parsedData = JSON.parse(data); // Plain objects
-    return parsedData.map(rebuildProject); // Rebuild as Project objects
-  }
-
   document.addEventListener("DOMContentLoaded", () => {
     TaskManager.clearAllProjects(); // Очищаем сначала
     TaskManager.clearAllTasks();
   
-    const projects = loadFromLocalStorage(); // Потом загружаем
+    const projects = StorageManager.loadFromLocalStorage(); // Потом загружаем
     projects.forEach((project) => TaskManager.addProject(project));
   
-    DOMController.renderProjects(TaskManager.getAllProjects());
-    DOMController.updateProjectDropdown(TaskManager.getAllProjects());
-    renderAllTasks(openEditForm, handleDeleteTask);
+    DOMRenderer.renderProjects(TaskManager.getAllProjects());
+    DOMRenderer.updateProjectDropdown(TaskManager.getAllProjects());
+    DOMRenderer.renderAllTasks(DOMRenderer.openEditForm, handleDeleteTask);
   });
 
   window.TaskManager = TaskManager;
@@ -114,70 +63,13 @@ export const DOMController = (function () {
         TaskManager.deleteProject(projectTitle);
         projectTab.remove();
 
-        saveToLocalStorage();
+        StorageManager.saveToLocalStorage();
     });
   }
 
   function onToggleImportantBtn(task) {
-    const isImportant = task.getIsImportant();
-
-    if (isImportant === false) {
-      // Task is not in favourites, add it
-      task.setIsImportant(true);
-      TaskManager.addImportantTask(task);
-    } else {
-      // Task is already in favourites, remove it
-      task.setIsImportant(false);
-      TaskManager.deleteImportantTask(task);
-    }
-
-    saveToLocalStorage();
-  }
-
-  function updateTaskData(task, updates) {
-    if (!task) {
-      console.error(`Task with name ${task.getTitle()} not found.`);
-      return null;
-    }
-
-    task.setTitle(updates.title);
-    task.setDescription(updates.description);
-    task.setDueDate(updates.dueDate);
-    task.setPriority(updates.priority);
-    task.setProject(updates.project);
-
-    return task;
-  }
-
-  function updateTaskUI(oldTaskId, newTaskId) {
-    const taskDiv = document.querySelector(`[data-title="${oldTaskId}"]`);
-    taskDiv.innerHTML = "";
-
-    const task = TaskManager.findTask(newTaskId);
-    const taskTitle = task.getTitle();
-    taskDiv.setAttribute("data-title", taskTitle);
-
-    if (!taskDiv) {
-      console.error(`Task element with ID ${newTaskId} not found.`);
-      return;
-    }
-
-    const heading = createTaskHeading(task);
-    const description = createTaskDescription(task);
-    const dueDateWrapper = createTaskDueDateMarker(task);
-    const priorityWrapper = createTaskPriorityMarker(task);
-    const importantBtn = createTaskImportantBtn(task, onToggleImportantBtn);
-    const dropdownMenu = createTaskOptions({ openEditForm, handleDeleteTask });
-
-    taskDiv.appendChild(heading);
-    taskDiv.appendChild(description);
-    taskDiv.appendChild(dueDateWrapper);
-    taskDiv.appendChild(importantBtn);
-    taskDiv.appendChild(dropdownMenu);
-
-    if (priorityWrapper !== null) {
-      taskDiv.appendChild(priorityWrapper);
-    }
+    TaskManager.toggleImportant(task);
+    StorageManager.saveToLocalStorage();
   }
 
   function editTaskFormSubmit(event) {
@@ -185,16 +77,13 @@ export const DOMController = (function () {
 
     const currentTask = editTaskForm.currentTask;
     const oldTitle = currentTask.getTitle();
-    const newTaskTitle = editTaskForm.elements.title.value;
-
-    const oldProject = currentTask.getProject(); //deleting the task from old project
-    oldProject.deleteTask(currentTask);
+    const newTitle = editTaskForm.elements.title.value;
 
     const newParentProjectTitle = editTaskForm.elements.project.value;
     const newParentProject = TaskManager.findProject(newParentProjectTitle);
 
     // Update task data
-    const updatedTask = updateTaskData(currentTask, {
+    const updatedTask = TaskManager.updateTask(currentTask, {
       title: editTaskForm.elements.title.value,
       description: editTaskForm.elements.description.value,
       dueDate: editTaskForm.elements.dueDate.value,
@@ -202,16 +91,14 @@ export const DOMController = (function () {
       project: newParentProject,
     });
 
-    newParentProject.addTask(updatedTask);
-
     if (updatedTask) {
       // Update UI
-      updateTaskUI(oldTitle, newTaskTitle);
+      DOMRenderer.updateTaskUI(oldTitle, newTitle, { onToggleImportantBtn, handleDeleteTask });
     }
 
     // Hide modal
     editTaskFormModal.close();
-    saveToLocalStorage();
+    StorageManager.saveToLocalStorage();
   }
 
   function handleDeleteTask(event) {
@@ -225,37 +112,7 @@ export const DOMController = (function () {
     TaskManager.deleteTask(task, project);
     currentTaskDiv.remove();
 
-    saveToLocalStorage();
-  }
-
-  function openEditForm(event) {
-    editTaskFormModal.showModal();
-
-    const currentTaskDiv = event.currentTarget.closest(".task-div");
-
-    const taskTitle = currentTaskDiv.dataset.title;
-
-    const task = TaskManager.findTask(taskTitle);
-
-    const titleField = document.querySelector(
-      ".edit-task-form .task-title-input",
-    );
-    const descriptionField = document.querySelector(
-      ".edit-task-form .description-input",
-    );
-    const dueDateField = document.querySelector(".edit-task-form .due-date");
-    const priorityField = document.querySelector(".edit-task-form .priority");
-    const parentProjectField = document.querySelector(
-      ".edit-task-form .project-select",
-    );
-
-    titleField.value = task.getTitle();
-    descriptionField.value = task.getDescription();
-    dueDateField.value = task.getDueDate();
-    priorityField.value = task.getPriority();
-    parentProjectField.value = task.getProject().getTitle();
-
-    editTaskForm.currentTask = task;
+    StorageManager.saveToLocalStorage();
   }
 
   function addProjectFormSubmit(event) {
@@ -277,8 +134,8 @@ export const DOMController = (function () {
     TaskManager.addProject(project);
     addProjectFormModal.close();
 
-    DOMController.renderProjects(TaskManager.getAllProjects());
-    DOMController.updateProjectDropdown(TaskManager.getAllProjects());
+    DOMRenderer.renderProjects(TaskManager.getAllProjects());
+    DOMRenderer.updateProjectDropdown(TaskManager.getAllProjects());
   }
 
   function addTaskFormSubmit(event) {
@@ -319,54 +176,14 @@ export const DOMController = (function () {
 
     if (projectTab && projectTab.classList.contains("active")) {
       const tasks = selectedProject.getTasks();
-      DOMController.renderTasks(tasks, openEditForm, handleDeleteTask);
+      DOMRenderer.renderTasks(tasks, DOMRenderer.openEditForm, handleDeleteTask);
     } else {
-      DOMController.renderTasks(selectedProject.getTasks(), openEditForm, handleDeleteTask);
+      DOMRenderer.renderTasks(selectedProject.getTasks(), DOMRenderer.openEditForm, handleDeleteTask);
       const allTasksTab = document.querySelector(".all-tasks-tab");
-      DOMController.makeTabActive(allTasksTab);
+      makeTabActive(allTasksTab);
     }
 
     addTaskFormModal.close();
-  }
-
-  function isThisWeekTask(task) {
-    const today = new Date();
-    const taskDate = new Date(task.getDueDate());
-
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
-
-    const endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
-
-    return taskDate >= startOfWeek && taskDate <= endOfWeek;
-  }
-
-  function renderThisWeekTasks() {
-    tasksList.innerHTML = "";
-    const projects = TaskManager.getAllProjects();
-
-    projects.forEach((project) => {
-      const projectTasks = project.getTasks();
-      projectTasks.forEach((task) => {
-        const isThisWeek = isThisWeekTask(task);
-        if (isThisWeek) {
-          addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask });
-        }
-      });
-    });
-  }
-
-  function setTaskImportantBtn(task, btn) {
-    const isImportant = task.getIsImportant();
-
-    if (isImportant === true) {
-      task.setIsImportant(true);
-      btn.classList.add("active");
-    } else {
-      task.setIsImportant(false);
-      btn.classList.remove("active");
-    }
   }
 
   // make all tabs in sidebar inactive
@@ -385,38 +202,38 @@ export const DOMController = (function () {
   // add project form submition
   addProjectForm.addEventListener("submit", (event) => {
     addProjectFormSubmit(event);
-    saveToLocalStorage();
+    StorageManager.saveToLocalStorage();
     addProjectForm.reset();
   });
 
   // add task form submition
   addTaskForm.addEventListener("submit", (event) => {
     addTaskFormSubmit(event);
-    saveToLocalStorage();
+    StorageManager.saveToLocalStorage();
     addTaskForm.reset();
   });
 
   editTaskForm.addEventListener("submit", (event) => {
-    editTaskFormSubmit(event);
-    saveToLocalStorage();
+    editTaskFormSubmit(event, editTaskForm);
+    StorageManager.saveToLocalStorage();
     editTaskForm.reset();
   });
 
   // adding event listeners to tabs and buttons in the sidebar
   allTasksTab.addEventListener("click", () => {
-    renderAllTasks(openEditForm, handleDeleteTask);
+    DOMRenderer.renderAllTasks(DOMRenderer.openEditForm, handleDeleteTask);
   });
 
   todayTasksTab.addEventListener("click", () => {
-    renderTodayTasks(openEditForm, handleDeleteTask);
+    DOMRenderer.renderTodayTasks(DOMRenderer.openEditForm, handleDeleteTask);
   });
 
   thisWeekTasksTab.addEventListener("click", () => {
-    renderThisWeekTasks();
+    DOMRenderer.renderThisWeekTasks(DOMRenderer.openEditForm, handleDeleteTask);
   });
 
   importantTasksTab.addEventListener("click", () => {
-    renderImportantTasks(openEditForm, handleDeleteTask);
+    DOMRenderer.renderImportantTasks(DOMRenderer.openEditForm, handleDeleteTask);
   });
 
   addTaskBtn.addEventListener("click", () => {
@@ -484,17 +301,11 @@ export const DOMController = (function () {
     ) {
       const projectTitle = projectTab.getAttribute("data-title");
       const project = TaskManager.findProject(projectTitle);
-      DOMController.renderTasks(project.getTasks(), openEditForm, handleDeleteTask);
+      DOMRenderer.renderTasks(project.getTasks(), DOMRenderer.openEditForm, handleDeleteTask);
     }
   });
 
   return {
-    addProjectTab,
-    addTaskDiv,
-    renderProjects,
-    renderAllTasks,
-    renderTasks,
-    updateProjectDropdown,
     deactivateTabs,
     makeTabActive,
     onToggleImportantBtn,

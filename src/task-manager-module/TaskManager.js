@@ -54,16 +54,6 @@ export const TaskManager = (function () {
         task.setIsImportant(true);
     }
 
-    function deleteProject(projectTitle) {
-        const projectToDelete = findProject(projectTitle);
-
-        const projectTasks = projectToDelete.getTasks();
-        projectTasks.forEach(task => deleteTask(task, projectToDelete));
-
-        const projectToDeleteIndex = allProjects.findIndex((p) => p.getTitle() === projectToDelete.getTitle());
-        allProjects.splice(projectToDeleteIndex, 1);
-    }
-
     function deleteTask(task, project) {
         const tasks = project.getTasks();
         const index = tasks.findIndex((t) => t.getTitle() === task.getTitle());
@@ -77,7 +67,7 @@ export const TaskManager = (function () {
                 allTasks.splice(allTaskIndex, 1);
             }
         } else {
-            console.log('error');
+            throw new Error("Task or Project not found");
         }
     }
 
@@ -88,12 +78,36 @@ export const TaskManager = (function () {
         task.setIsImportant(false);
     }
 
-    function findProject(projectTitle) {
-        const wantedProject = allProjects.find(project => project.getTitle() === projectTitle);
-        if (wantedProject) {
-            return wantedProject;
+    function toggleImportant(task) {
+        const isImportant = task.getIsImportant();
+
+        if (isImportant === false) {
+          // Task is not in favourites, add it
+          task.setIsImportant(true);
+          TaskManager.addImportantTask(task);
+        } else {
+          // Task is already in favourites, remove it
+          task.setIsImportant(false);
+          TaskManager.deleteImportantTask(task);
         }
-        return 'project not found';
+    }
+
+    function updateTask(task, updates) {
+        const oldProject = task.getProject();
+        oldProject.deleteTask(task);
+        const newProject = TaskManager.findProject(updates.project.getTitle());
+        
+        if (newProject === "project not found") throw new Error("Project Not Found");
+    
+        task.setTitle(updates.title);
+        task.setDescription(updates.description);
+        task.setDueDate(updates.dueDate);
+        task.setPriority(updates.priority);
+        task.setProject(newProject);
+    
+        addTask(task, newProject);
+    
+        return task;
     }
 
     function findTask(taskName) {
@@ -110,6 +124,43 @@ export const TaskManager = (function () {
         return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
-    return { getAllProjects, getAllTasks, getImportantTasks, addProject, addTask, clearAllTasks, clearAllProjects, clearImportantTasks, addImportantTask, deleteProject, deleteTask, deleteImportantTask, findProject, findTask, isImportant, addTaskToAll }
+    function deleteProject(projectTitle) {
+        const projectToDelete = findProject(projectTitle);
+
+        const projectTasks = projectToDelete.getTasks();
+        projectTasks.forEach(task => deleteTask(task, projectToDelete));
+
+        const projectToDeleteIndex = allProjects.findIndex((p) => p.getTitle() === projectToDelete.getTitle());
+        allProjects.splice(projectToDeleteIndex, 1);
+    }
+
+    function findProject(projectTitle) {
+        const wantedProject = allProjects.find(project => project.getTitle() === projectTitle);
+        if (wantedProject) {
+            return wantedProject;
+        }
+        return 'project not found';
+    }
+
+    return {
+        getAllProjects,
+        getAllTasks,
+        getImportantTasks,
+        addProject,
+        addTask,
+        clearAllTasks,
+        clearAllProjects,
+        clearImportantTasks,
+        addImportantTask,
+        deleteProject,
+        deleteTask,
+        deleteImportantTask,
+        updateTask,
+        findProject,
+        findTask,
+        isImportant,
+        addTaskToAll,
+        toggleImportant,
+    }
 })();
 
