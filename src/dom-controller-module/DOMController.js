@@ -1,6 +1,6 @@
 import { TaskManager } from "../task-manager-module/TaskManager.js";
 // import { TaskController } from "../dom-controller-module/TaskController.js";
-import { DOMRenderer } from "./DOMRenderer.js"
+import { DOMRenderer } from "../dom-renderer/DOMRenderer.js"
 import { StorageManager } from "./StorageManager.js"
 import { Project } from "../project-module/Project.js";
 import { Task } from "../task-module/Task.js";
@@ -143,17 +143,11 @@ export const DOMController = (function () {
 
     const projects = TaskManager.getAllProjects();
 
-    const title = document.querySelector(
-      ".add-task-form .task-title-input",
-    ).value;
-    const description = document.querySelector(
-      ".add-task-form .description-input",
-    ).value;
+    const title = document.querySelector(".add-task-form .task-title-input").value;
+    const description = document.querySelector(".add-task-form .description-input").value;
     const dueDate = document.querySelector(".add-task-form .due-date").value;
     const priority = document.querySelector(".add-task-form .priority").value;
-    const selectedProjectTitle = document.querySelector(
-      ".add-task-form .project-select",
-    ).value;
+    const selectedProjectTitle = document.querySelector(".add-task-form .project-select").value;
     const selectedProject = TaskManager.findProject(selectedProjectTitle);
 
     const existingTask = projects.some((project) => {
@@ -161,24 +155,22 @@ export const DOMController = (function () {
     });
 
     if (existingTask) {
-      alert(
-        "A project with this title already exists. Please choose a different title.",
-      );
+      alert("A task with this title already exists. Please choose a different title.");
       return;
     }
 
     const task = Task(title, description, dueDate, priority, selectedProject);
-    TaskManager.addTask(task, selectedProject);
 
-    const projectTab = document.querySelector(
-      `.tab[data-title='${selectedProjectTitle}']`,
-    );
+    TaskManager.addTask(task, selectedProject);
+    TaskManager.addTaskToAll(task);
+
+    const projectTab = document.querySelector(`.tab[data-title='${selectedProjectTitle}']`);
 
     if (projectTab && projectTab.classList.contains("active")) {
       const tasks = selectedProject.getTasks();
       DOMRenderer.renderTasks(tasks, DOMRenderer.openEditForm, handleDeleteTask);
     } else {
-      DOMRenderer.renderTasks(selectedProject.getTasks(), DOMRenderer.openEditForm, handleDeleteTask);
+      DOMRenderer.renderAllTasks(DOMRenderer.openEditForm, handleDeleteTask);
       const allTasksTab = document.querySelector(".all-tasks-tab");
       makeTabActive(allTasksTab);
     }

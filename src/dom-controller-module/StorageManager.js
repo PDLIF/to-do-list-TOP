@@ -1,8 +1,8 @@
 import { TaskManager } from './../task-manager-module/TaskManager.js'
 
-import {
-  rebuildProject
-} from './TaskController.js'
+// import {
+//   rebuildProject
+// } from '../task-manager-module/TaskManager.js'
 
 export const StorageManager = (function() {
   function saveToLocalStorage() {
@@ -18,7 +18,7 @@ export const StorageManager = (function() {
     if (!data) return [];
 
     const parsedData = JSON.parse(data); // Plain objects
-    return parsedData.map(rebuildProject); // Rebuild as Project objects
+    return parsedData.map(TaskManager.rebuildProject); // Rebuild as Project objects
   }
 
   return {

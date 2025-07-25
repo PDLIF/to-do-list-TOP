@@ -1,6 +1,6 @@
 import projectDeleteIconPath from "../assets/delete-project-btn/delete-project-icon.svg";
 
-import { DOMController } from './DOMController.js';
+import { DOMController } from '../dom-controller-module/DOMController.js';
 import { TaskManager } from "../task-manager-module/TaskManager.js";
 
 export const DOMRenderer = (function () {
@@ -219,9 +219,11 @@ export const DOMRenderer = (function () {
       tasksList.innerHTML = "";
 
       const projects = TaskManager.getAllProjects();
+      
       projects.forEach((project) => {
         const tasks = project.getTasks();
         tasks.forEach(task => addTaskDiv(task, tasksList, { openEditForm, handleDeleteTask }));
+        console.log(tasks)
       });
 
       DOMController.makeTabActive(allTasksTab);

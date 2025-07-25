@@ -1,7 +1,7 @@
 import { Task } from '../task-module/Task.js';
 import { Project } from '../project-module/Project.js';
 import { TaskManager } from '../task-manager-module/TaskManager.js';
-import { DOMRenderer } from '../dom-controller-module/DOMRenderer.js';
+import { DOMRenderer } from '../dom-renderer/DOMRenderer.js';
 
 export const App = (function () {
     function initialize() {

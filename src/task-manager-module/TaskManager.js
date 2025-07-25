@@ -1,3 +1,6 @@
+import { Task } from "../task-module/Task.js";
+import { Project } from "../project-module/Project.js";
+
 export const TaskManager = (function () {
     const allTasks = [];
     const allProjects = [];
@@ -42,7 +45,7 @@ export const TaskManager = (function () {
     }
 
     function addTaskToAll(task) {
-        allTasks.push(task)
+        allTasks.push(task);
     }
     
     function addTask(task, project) {
@@ -134,6 +137,29 @@ export const TaskManager = (function () {
         allProjects.splice(projectToDeleteIndex, 1);
     }
 
+    function rebuildTask(data, parentProject) {
+        const rebuildParentProject = parentProject;
+        return Task(
+          data.title,
+          data.description,
+          data.dueDate,
+          data.priority,
+          rebuildParentProject,
+          data.isImportant,
+        );
+      }
+
+    function rebuildProject(data) {
+        const project = Project(data.title);
+    
+        data.tasks.forEach((taskData) => {
+          const task = rebuildTask(taskData, project);
+          project.addTask(task);
+        });
+    
+        return project;
+    }
+
     function findProject(projectTitle) {
         const wantedProject = allProjects.find(project => project.getTitle() === projectTitle);
         if (wantedProject) {
@@ -161,6 +187,8 @@ export const TaskManager = (function () {
         isImportant,
         addTaskToAll,
         toggleImportant,
+        rebuildTask,
+        rebuildProject
     }
 })();
 
