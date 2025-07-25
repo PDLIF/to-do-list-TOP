@@ -37,13 +37,6 @@ export const TaskManager = (function () {
         return importantTasks;
     }
 
-    function addProject(project) {
-        allProjects.push(project);
-        
-        const projectTasks = project.getTasks();
-        projectTasks.forEach(task => allTasks.push(task));
-    }
-
     function addTaskToAll(task) {
         allTasks.push(task);
     }
@@ -79,6 +72,10 @@ export const TaskManager = (function () {
 
         importantTasks.splice(index, 1);
         task.setIsImportant(false);
+    }
+
+    function isImportant(task) {
+        return importantTasks.some(t => t.getTitle() === task.getTitle());
     }
 
     function toggleImportant(task) {
@@ -123,20 +120,6 @@ export const TaskManager = (function () {
         return 'task not found'; // Return null if no task is found
     }
 
-    function isImportant(task) {
-        return importantTasks.some(t => t.getTitle() === task.getTitle());
-    }
-
-    function deleteProject(projectTitle) {
-        const projectToDelete = findProject(projectTitle);
-
-        const projectTasks = projectToDelete.getTasks();
-        projectTasks.forEach(task => deleteTask(task, projectToDelete));
-
-        const projectToDeleteIndex = allProjects.findIndex((p) => p.getTitle() === projectToDelete.getTitle());
-        allProjects.splice(projectToDeleteIndex, 1);
-    }
-
     function rebuildTask(data, parentProject) {
         const rebuildParentProject = parentProject;
         return Task(
@@ -148,6 +131,23 @@ export const TaskManager = (function () {
           data.isImportant,
         );
       }
+
+    function addProject(project) {
+        allProjects.push(project);
+        
+        const projectTasks = project.getTasks();
+        projectTasks.forEach(task => allTasks.push(task));
+    }
+
+    function deleteProject(projectTitle) {
+        const projectToDelete = findProject(projectTitle);
+
+        const projectTasks = projectToDelete.getTasks();
+        projectTasks.forEach(task => deleteTask(task, projectToDelete));
+
+        const projectToDeleteIndex = allProjects.findIndex((p) => p.getTitle() === projectToDelete.getTitle());
+        allProjects.splice(projectToDeleteIndex, 1);
+    }
 
     function rebuildProject(data) {
         const project = Project(data.title);
