@@ -1,7 +1,22 @@
-import { jest, test, expect } from '@jest/globals'
-import { TaskManager } from "./TaskManager.js";
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule("../task-module/Task.js", () => ({
+    Task: jest.fn(),
+}));
+  
+jest.unstable_mockModule("../project-module/Project.js", () => ({
+    Project: jest.fn(),
+}));
+
+const { TaskManager } = await import("./TaskManager.js");
+const { Task } = await import("../task-module/Task.js");
+const { Project } = await import("../project-module/Project.js");
 
 describe('ACTIONS WITH PROJECTS', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    
     test('addProject adds a project and its tasks to TaskManager', () => {
         const mockTask = { getTitle: () => 'Test task' };
         const mockProject = {
@@ -53,10 +68,80 @@ describe('ACTIONS WITH PROJECTS', () => {
 
         const result = TaskManager.findProject('Nonexistent Project');
         expect(result).toBe('project not found');
-    })
+    });
+
+    test('rebuildProject reconstructs a task with proper arguments', () => {
+        const mockTask1 = { title: 'Task 1' }
+        const mockTask2 = { title: 'Task 2' }
+
+        const mockAddTask = jest.fn();
+
+        const mockProjectInstance = {
+            addTask: mockAddTask,
+        }
+
+        Project.mockReturnValue(mockProjectInstance);
+
+        Task
+            .mockReturnValueOnce(mockTask1)
+            .mockReturnValueOnce(mockTask2);
+
+        const inputData = {
+            title: 'My Project',
+            tasks: [
+                {
+                    title: 'Task 1',
+                    description: 'Desc 1',
+                    dueDate: '2025-08-01',
+                    priority: 'high',
+                    isImportant: false,
+                },
+                {
+                    title: 'Task 2',
+                    description: 'Desc 2',
+                    dueDate: '2025-08-02',
+                    priority: 'low',
+                    isImportant: true,
+                }
+            ]
+        };
+
+        const result = TaskManager.rebuildProject(inputData);
+
+        expect(Project).toHaveBeenCalledWith('My Project');
+
+        expect(Task).toHaveBeenCalledTimes(2);
+
+        expect(Task).toHaveBeenCalledWith(
+            'Task 1',
+            'Desc 1',
+            '2025-08-01',
+            'high',
+            mockProjectInstance,
+            false
+        );
+    
+        expect(Task).toHaveBeenCalledWith(
+            'Task 2',
+            'Desc 2',
+            '2025-08-02',
+            'low',
+            mockProjectInstance,
+            true
+        );
+
+        expect(mockAddTask).toHaveBeenCalledWith(mockTask1);
+        expect(mockAddTask).toHaveBeenCalledWith(mockTask2);
+
+        expect(result).toBe(mockProjectInstance);
+    });
 });
 
 describe('ACTIONS WITH TASKS', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    
     test('addTask adds a task to a project', () => {
         const tasksArray = [];
         
@@ -184,5 +269,33 @@ describe('ACTIONS WITH TASKS', () => {
 
         const result = TaskManager.isImportant(mockTask);
         expect(result).toBe(true);
-    })
+    });
+
+    test('rebuildTask reconstructs a task with proper arguments', () => {
+        const mockProject = { title: 'My Project' }
+        const mockTask = { title: 'My Task' }
+
+        Task.mockReturnValue(mockTask);
+
+        const taskData = {
+            title: 'My Rebuilt Task',
+            description: 'Description',
+            dueDate: '2025-08-01',
+            priority: 'medium',
+            isImportant: true
+        }
+
+        const result = TaskManager.rebuildTask(taskData, mockProject);
+
+        expect(Task).toHaveBeenCalledWith(
+            'My Rebuilt Task',
+            'Description',
+            '2025-08-01',
+            'medium',
+            mockProject,
+            true,
+        );
+
+        expect(result).toBe(mockTask);
+    });
 });
